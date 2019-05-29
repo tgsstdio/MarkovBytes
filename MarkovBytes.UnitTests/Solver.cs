@@ -1,6 +1,6 @@
 ﻿namespace Tests
 {
-    public class Solver<T>
+    public class Solver<T> 
     {
         private readonly Solution<T>[] mSolutions;
 
