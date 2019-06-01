@@ -1,15 +1,15 @@
-﻿namespace Tests
+﻿namespace Markov
 {
-    public class Solver<T> 
+    public class Solver
     {
-        private readonly Solution<T>[] mSolutions;
+        private readonly Solution[] mSolutions;
 
-        public Solver(Solution<T>[] solutions)
+        public Solver(Solution[] solutions)
         {
             mSolutions = solutions;
         }
 
-        public bool Resolve(int pastState, out T next)
+        public bool Resolve(int pastState, out ushort next)
         {
 
             var current = mSolutions[pastState];
@@ -23,7 +23,7 @@
                     next = current.Branch;
                     return true;
                 default:
-                    next = default(T);
+                    next = default(ushort);
                     return false;
             }
         }

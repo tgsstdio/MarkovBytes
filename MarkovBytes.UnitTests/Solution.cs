@@ -1,10 +1,10 @@
-﻿namespace Tests
+﻿namespace Markov
 {
-    public class Solution<T>
+    public class Solution
     {
         public SolutionType Approach { get; set; }
-        public T Id { get; set; }
-        public T Branch { get; set; }
+        public ushort Id { get; set; }
+        public ushort Branch { get; set; }
         public float Threshold { get; set; }
     }
 }

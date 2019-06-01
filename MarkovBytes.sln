@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarkovBytes", "MarkovBytes\MarkovBytes.csproj", "{D923CC39-CFE5-4B12-95CB-2F385FCF3DE8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarkovBytes.UnitTests", "MarkovBytes.UnitTests\MarkovBytes.UnitTests.csproj", "{9D3B75A4-EC9A-4E31-A4A7-C446198B89AD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -13,5 +15,9 @@ Global
 		{D923CC39-CFE5-4B12-95CB-2F385FCF3DE8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D923CC39-CFE5-4B12-95CB-2F385FCF3DE8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D923CC39-CFE5-4B12-95CB-2F385FCF3DE8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9D3B75A4-EC9A-4E31-A4A7-C446198B89AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9D3B75A4-EC9A-4E31-A4A7-C446198B89AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9D3B75A4-EC9A-4E31-A4A7-C446198B89AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9D3B75A4-EC9A-4E31-A4A7-C446198B89AD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

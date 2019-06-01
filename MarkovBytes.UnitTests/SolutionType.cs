@@ -1,12 +1,13 @@
-﻿namespace Tests
+﻿namespace Markov
 {
-    public enum SolutionType
+    public enum SolutionType : uint
     {
+        Unoptimized = 0,
+        NoOperation = 1,
         EvenAll,
         EvenOut,
         Redirect,
         DeadEnd,
         Sparse,
-        FullMatrix,
     }
 }
