@@ -74,6 +74,7 @@ namespace MarkovBytes.UnitTests
 
             return new RowStats
             {
+                Row = self,
                 Records = records,
                 SelfPercent = selfPercent,
                 NoOfStates = noOfStates,
@@ -94,16 +95,24 @@ namespace MarkovBytes.UnitTests
             else if (stats.NoOfNonZeroPercents == 1)
             {
                 var top = stats.Records[0];
+                int first = top.First;
 
-                var branch = top.First;
-
-                return new RowSolution
+                if (stats.Row == first)
                 {
-                    Approach = SolutionType.Redirect,
-                    Branch = branch,
-                };
-
-                // TODO: find one branch out,
+                    return new RowSolution
+                    {
+                        Approach = SolutionType.DeadEnd,
+                        Branch = first,
+                    };
+                }
+                else
+                {
+                    return new RowSolution
+                    {
+                        Approach = SolutionType.Redirect,
+                        Branch = first,
+                    };
+                }
             }
             else
             {
@@ -138,6 +147,59 @@ namespace MarkovBytes.UnitTests
 
             var result = Evaluate(stats);
             Assert.AreEqual(SolutionType.NoOperation, result.Approach);
+        }
+
+        [Test]
+        public void Evaluate_Redirect_0()
+        {
+            var stats = new RowStats();
+            const int EXPECTED_RESULT = 2;
+            stats.Records = new[] { new RowRecord { First = EXPECTED_RESULT } };
+            const int OTHER = 1;
+            stats.Row = OTHER;
+
+            stats.NoOfStates = 1;
+            stats.NoOfNonZeroPercents = 1;
+            stats.NoOfZeroPercents = 0;
+
+            var result = Evaluate(stats);
+            Assert.AreEqual(SolutionType.Redirect, result.Approach);
+            Assert.AreEqual(EXPECTED_RESULT, result.Branch);
+        }
+
+        [Test]
+        public void Evaluate_Redirect_1()
+        {
+            var stats = new RowStats();
+
+            const int EXPECTED_RESULT = 3;
+
+            const int OTHER = 1;
+            stats.Row = OTHER;
+            stats.Records = new[] { new RowRecord { First = EXPECTED_RESULT } };
+            stats.NoOfStates = 2;
+            stats.NoOfNonZeroPercents = 1;
+            stats.NoOfZeroPercents = 1;
+
+            var result = Evaluate(stats);
+            Assert.AreEqual(SolutionType.Redirect, result.Approach);
+            Assert.AreEqual(EXPECTED_RESULT, result.Branch);
+        }
+
+        [Test]
+        public void Evaluate_DeadEnd_0()
+        {
+            var stats = new RowStats();
+            const int EXPECTED_RESULT = 3;
+            stats.Records = new[] { new RowRecord { First = EXPECTED_RESULT } };
+            stats.Row = EXPECTED_RESULT;
+            stats.NoOfStates = 2;
+            stats.NoOfNonZeroPercents = 1;
+            stats.NoOfZeroPercents = 1;
+
+            var result = Evaluate(stats);
+            Assert.AreEqual(SolutionType.DeadEnd, result.Approach);
+            Assert.AreEqual(EXPECTED_RESULT, result.Branch);
         }
 
         [Test]

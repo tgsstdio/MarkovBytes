@@ -9,5 +9,6 @@ namespace Markov
         public ushort? SelfPercent { get; set; }
         public RowRecord[] Records { get; set; }
         public int NoOfStates { get; internal set; }
+        public int Row { get; internal set; }
     }
 }

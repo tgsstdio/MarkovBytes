@@ -122,23 +122,6 @@ namespace MarkovBytes.UnitTests
         }
 
         [Test]
-        public void EvenAllDemo()
-        {
-            Assert.AreEqual(100, GetDenomintor(0, 100));
-            Assert.AreEqual(13, GetDenomintor(13, 26));
-            Assert.AreEqual(10, GetDenomintor(10, 20));
-        }
-
-        [Test]
-        public void EvenAllNum()
-        {
-            Assert.AreEqual(15, GetNumerator(0, 15));
-            Assert.AreEqual(2, GetNumerator(3, 5));
-            Assert.AreEqual(10, GetNumerator(4, 14));
-            Assert.AreEqual(11, GetNumerator(0, 11));
-        }
-
-        [Test]
         public void EvenAlNormal()
         {
 
@@ -149,17 +132,39 @@ namespace MarkovBytes.UnitTests
             const int MaxDomain = 100;
             const int N = 10;
 
-            Assert.AreEqual(11, GetNumerator(0, 11), "GetNumerator");
-            Assert.AreEqual(100, GetDenomintor(0, 100), "GetDenomintor");
             Assert.AreEqual(1, GetNormalized(Next, MinDomain, MaxDomain, N), "GetNormalized");
         }
+
+        private static int GetEvenInRange(int numRand, int minRand, int maxRand, int left, int right, int arrayLength)
+        {
+            int start = left;
+            int end = (right <= left) ? right + arrayLength : right;
+
+            int n = numRand - minRand;
+            int d = maxRand - minRand;
+
+            // LERP
+            int windowSize = end - start + 1;
+            int shift = (n * windowSize) / d;
+
+            // BOUNDED VALUES 100% => < 1.0
+            int offset = (shift >= windowSize)
+                ? windowSize - 1 // LAST VALUE
+                : shift;
+
+            return (left + offset) % arrayLength;
+        }
+
 
         private static int GetEvenAllTransistion(
             int next, int minDomain, int maxDomain, int N, int offset)
         {
-            var normal = GetNormalized(next, minDomain, maxDomain, N);
-            var index = GetIndex(normal, N, offset, maxDomain - minDomain);
-            return index;
+            //var normal = GetNormalized(next, minDomain, maxDomain, N);
+            //var index = GetIndex(normal, N, offset, maxDomain - minDomain);
+            //return index;
+
+            return GetEvenInRange(next, minDomain, maxDomain,
+                 offset, N - 1 + offset, N);
         }
 
         [Test]
@@ -222,8 +227,6 @@ namespace MarkovBytes.UnitTests
         [Test]
         public void WindowOF4_1()
         {
-            Assert.AreEqual(4, GetDenomintor(6, 10));
-            Assert.AreEqual(1, GetNumerator(6, 7));
             Assert.AreEqual(7, GetIndex(1, 10, 6, 4));
 
             Assert.AreEqual(7, GenerateEvenAll(1, 6, 4, 10));
@@ -267,9 +270,11 @@ namespace MarkovBytes.UnitTests
 
         public int GenerateEvenAll(int next, int offset, int count, int N)
         {
-            var normal = GetNormalized(next + offset, offset, offset + count, count);
+            // var normal = GetNormalized(next + offset, offset, offset + count, count);
 
-            return GetIndex(normal, N, offset, count);
+            // return GetIndex(normal, N, offset, count);
+
+            return GetEvenInRange(next, 0, count, offset, offset + count - 1, N);
         }
 
         [Test]
@@ -296,12 +301,23 @@ namespace MarkovBytes.UnitTests
         }
 
         [Test]
+        public void EvenOut_1_Rand_8()
+        {
+            int self = 1;
+            int N = 5;
+            int next = 1;
+            int EXPECTED = 3;
+
+            Assert.AreEqual(EXPECTED, GenerateEvenOut(next, self, N));
+        }
+
+        [Test]
         public void EvenOut_1_Rand_5()
         {
             int self = 1;
             int N = 10;
             int next = 5;
-            int expected = 6;
+            int expected = 7;
 
             Assert.AreEqual(expected, GenerateEvenOut(next, self, N));
         }
@@ -319,7 +335,13 @@ namespace MarkovBytes.UnitTests
 
         private int GenerateEvenOut(int next, int self, int n)
         {
-            return GenerateEvenAll(next, self + 1, n - 1, n);
+            int left = self + 1;
+            int right = self - 1;
+
+            return GetEvenInRange(next, 0, n - 1, left, right, n);
+
+
+            //return GenerateEvenAll(next, self + 1, n - 1, n);
         }
 
         private static int GetIndex(int normal, int N, int offset, int count)
@@ -343,19 +365,11 @@ namespace MarkovBytes.UnitTests
         private static int GetNormalized(int next, int minDomain, int maxDomain, int N)
         {
             return Math.DivRem(
-                N * GetNumerator(minDomain, next),
-                 GetDenomintor(minDomain, maxDomain),
+                N * (next - minDomain),
+                 (maxDomain - minDomain),
                  out int result);
         }
 
-        private static int GetNumerator(int minDomain, int next)
-        {
-            return (next - minDomain);
-        }
 
-        private static int GetDenomintor(int minDomain, int maxDomain)
-        {
-            return (maxDomain - minDomain);
-        }
     }
 }
