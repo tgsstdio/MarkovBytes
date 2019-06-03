@@ -1,6 +1,6 @@
 ﻿namespace Markov
 {
-    public class RowRecord
+    public class ValueCluster
     {
         public ushort Value { get; set; }
         public int NoOfTimes { get; set; }
