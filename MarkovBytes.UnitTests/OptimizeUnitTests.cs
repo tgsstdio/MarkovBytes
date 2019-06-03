@@ -58,7 +58,8 @@ namespace MarkovBytes.UnitTests
                     new ValueCluster
                     {
                         Value = MAX_VALUE,
-                        First = EXPECTED_RESULT
+                        First = EXPECTED_RESULT,
+                        NoOfTimes = 1,
                     }
                 },
                 Row = OTHER_BRANCH,
@@ -94,7 +95,8 @@ namespace MarkovBytes.UnitTests
                 Clusters = new[] {
                     new ValueCluster {
                         Value = MAX_VALUE,
-                        First = EXPECTED_RESULT
+                        First = EXPECTED_RESULT,
+                        NoOfTimes = 1,
                     }
                 },
                 NoOfStates = 2,
@@ -123,7 +125,8 @@ namespace MarkovBytes.UnitTests
                 Clusters = new[] { 
                     new ValueCluster {
                         Value = MAX_VALUE,
-                        First = EXPECTED_RESULT 
+                        First = EXPECTED_RESULT,
+                        NoOfTimes = 1,
                     }
                 },
                 Row = EXPECTED_RESULT,

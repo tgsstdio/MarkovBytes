@@ -24,7 +24,8 @@ namespace Markov
         {
             var solutions = new List<MatrixSolutionRow>();
 
-            for(var i = 0; i < grids.Length; i += 1) {
+            int noOfStates = grids.Length;
+            for (var i = 0; i < noOfStates; i += 1) {
                 var row = grids[i];
 
                 var summary = Investigate(0, row);
@@ -43,6 +44,8 @@ namespace Markov
 
             return new MatrixSolution
             {
+                Original = grids,
+                NoOfStates = noOfStates,
                 IsOptimized = isOptimized,
                 Rows = solutions.ToArray(),
             };
@@ -122,7 +125,7 @@ namespace Markov
             {
                 var top = stats.Clusters[0];
 
-                if (top.Value == MaxProbability)
+                if (top.Value == MaxProbability && top.NoOfTimes == 1)
                 {
                     if (stats.Row == top.First)
                     {
@@ -142,19 +145,36 @@ namespace Markov
                 }
                 if (stats.NoOfNonZeroPercents == stats.NoOfStates)
                 {
+                    // TODO: check for consecutive non-zeros
+                    int left = 0;
+                    int count = stats.NoOfNonZeroPercents;
+                    int right = left + count - 1;
+                    int domain = Solver.GetDomain(left, right, stats.NoOfStates);
+
                     return new MatrixSolutionRow
                     {
                         Approach = SolutionType.EvenAll,
+                        Branch = stats.Row,
+                        Domain = domain,
                     };
                 }
 
                 if (!stats.SelfPercent.HasValue
                   && stats.NoOfNonZeroPercents == stats.NoOfStates - 1)
                 {
+                    var left = stats.Row + 1;
+                    var right = stats.Row - 1;
+                    var domain = Solver.GetDomain(
+                        left,
+                        right, 
+                        stats.NoOfStates);
+
                     return new MatrixSolutionRow
                     {
                         Approach = SolutionType.EvenOut,
                         Branch = stats.Row,
+                        Left = left,
+                        Domain = domain,
                     };
                 }
             }

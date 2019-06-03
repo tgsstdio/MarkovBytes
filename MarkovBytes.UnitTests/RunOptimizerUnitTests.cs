@@ -10,12 +10,12 @@ namespace MarkovBytes.UnitTests
         [Test]
         public void ZeroMatrix()
         {
-            var source = new ushort[]
+            var source = new ushort[][]
             {
-                new {0 , 0 ,0 , 0},
-                new {0 , 0 ,0 , 0},
-                new {0 , 0 ,0 , 0},
-                new {0 , 0 ,0 , 0},
+                new ushort[]{0 , 0 ,0 , 0},
+                new ushort[]{0 , 0 ,0 , 0},
+                new ushort[]{0 , 0 ,0 , 0},
+                new ushort[]{0 , 0 ,0 , 0},
             };
 
             IMatrixOptimizer optimizer = new MatrixOptimizer

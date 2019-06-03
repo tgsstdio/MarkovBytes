@@ -1,4 +1,5 @@
 using System;
+using Markov;
 using NUnit.Framework;
 
 namespace MarkovBytes.UnitTests
@@ -27,13 +28,13 @@ namespace MarkovBytes.UnitTests
             {
                 var offset = 0;
 
-                Assert.AreEqual(0, GetEvenAllTransistion(9, minDomain, maxDomain, N, offset));
+                Assert.AreEqual(0, Solver.GetEvenAllTransistion(9, maxDomain, N, offset));
                 //Assert.AreEqual(1, GetEvenAllTransistion(10, minDomain, maxDomain, N, offset));
-                Assert.AreEqual(1, GetEvenAllTransistion(11, minDomain, maxDomain, N, offset));
-                Assert.AreEqual(2, GetEvenAllTransistion(25, minDomain, maxDomain, N, offset));
-                Assert.AreEqual(3, GetEvenAllTransistion(35, minDomain, maxDomain, N, offset));
-                Assert.AreEqual(7, GetEvenAllTransistion(77, minDomain, maxDomain, N, offset));
-                Assert.AreEqual(9, GetEvenAllTransistion(100, minDomain, maxDomain, N, offset));
+                Assert.AreEqual(1, Solver.GetEvenAllTransistion(11, maxDomain, N, offset));
+                Assert.AreEqual(2, Solver.GetEvenAllTransistion(25, maxDomain, N, offset));
+                Assert.AreEqual(3, Solver.GetEvenAllTransistion(35, maxDomain, N, offset));
+                Assert.AreEqual(7, Solver.GetEvenAllTransistion(77, maxDomain, N, offset));
+                Assert.AreEqual(9, Solver.GetEvenAllTransistion(100, maxDomain, N, offset));
             }
         }
 
@@ -47,13 +48,13 @@ namespace MarkovBytes.UnitTests
 
             var offset = 3;
 
-            Assert.AreEqual(3, GetEvenAllTransistion(9, minDomain, maxDomain, N, offset));
+            Assert.AreEqual(3, Solver.GetEvenAllTransistion(9, maxDomain, N, offset));
             //Assert.AreEqual(1, GetEvenAllTransistion(10, minDomain, maxDomain, N, offset));
-            Assert.AreEqual(4, GetEvenAllTransistion(11, minDomain, maxDomain, N, offset));
-            Assert.AreEqual(5, GetEvenAllTransistion(25, minDomain, maxDomain, N, offset));
-            Assert.AreEqual(6, GetEvenAllTransistion(35, minDomain, maxDomain, N, offset));
-            Assert.AreEqual(0, GetEvenAllTransistion(77, minDomain, maxDomain, N, offset));
-            Assert.AreEqual(2, GetEvenAllTransistion(100, minDomain, maxDomain, N, offset));
+            Assert.AreEqual(4, Solver.GetEvenAllTransistion(11, maxDomain, N, offset));
+            Assert.AreEqual(5, Solver.GetEvenAllTransistion(25, maxDomain, N, offset));
+            Assert.AreEqual(6, Solver.GetEvenAllTransistion(35, maxDomain, N, offset));
+            Assert.AreEqual(0, Solver.GetEvenAllTransistion(77, maxDomain, N, offset));
+            Assert.AreEqual(2, Solver.GetEvenAllTransistion(100, maxDomain, N, offset));
         }
 
         [Test]
@@ -66,7 +67,7 @@ namespace MarkovBytes.UnitTests
 
             var offset = 3;
 
-            Assert.AreEqual(2, GetEvenAllTransistion(100, minDomain, maxDomain, N, offset));
+            Assert.AreEqual(2, Solver.GetEvenAllTransistion(100, maxDomain, N, offset));
         }
 
         [Test]
@@ -79,7 +80,7 @@ namespace MarkovBytes.UnitTests
 
             var offset = 3;
 
-            Assert.AreEqual(2, GetEvenAllTransistion(99, minDomain, maxDomain, N, offset));
+            Assert.AreEqual(2, Solver.GetEvenAllTransistion(99, maxDomain, N, offset));
         }
 
         [Test]
@@ -92,7 +93,7 @@ namespace MarkovBytes.UnitTests
 
             var offset = 3;
 
-            Assert.AreEqual(2, GetEvenAllTransistion(90, minDomain, maxDomain, N, offset));
+            Assert.AreEqual(2, Solver.GetEvenAllTransistion(90, maxDomain, N, offset));
         }
 
         [Test]
@@ -105,7 +106,7 @@ namespace MarkovBytes.UnitTests
 
             var offset = 3;
 
-            Assert.AreEqual(1, GetEvenAllTransistion(89, minDomain, maxDomain, N, offset));
+            Assert.AreEqual(1, Solver.GetEvenAllTransistion(89, maxDomain, N, offset));
         }
 
         [Test]
@@ -118,7 +119,7 @@ namespace MarkovBytes.UnitTests
 
             var offset = 3;
 
-            Assert.AreEqual(0, GetEvenAllTransistion(79, minDomain, maxDomain, N, offset));
+            Assert.AreEqual(0, Solver.GetEvenAllTransistion(79, maxDomain, N, offset));
         }
 
         [Test]
@@ -133,38 +134,6 @@ namespace MarkovBytes.UnitTests
             const int N = 10;
 
             Assert.AreEqual(1, GetNormalized(Next, MinDomain, MaxDomain, N), "GetNormalized");
-        }
-
-        private static int GetEvenInRange(int numRand, int minRand, int maxRand, int left, int right, int arrayLength)
-        {
-            int start = left;
-            int end = (right <= left) ? right + arrayLength : right;
-
-            int n = numRand - minRand;
-            int d = maxRand - minRand;
-
-            // LERP
-            int windowSize = end - start + 1;
-            int shift = (n * windowSize) / d;
-
-            // BOUNDED VALUES 100% => < 1.0
-            int offset = (shift >= windowSize)
-                ? windowSize - 1 // LAST VALUE
-                : shift;
-
-            return (left + offset) % arrayLength;
-        }
-
-
-        private static int GetEvenAllTransistion(
-            int next, int minDomain, int maxDomain, int N, int offset)
-        {
-            //var normal = GetNormalized(next, minDomain, maxDomain, N);
-            //var index = GetIndex(normal, N, offset, maxDomain - minDomain);
-            //return index;
-
-            return GetEvenInRange(next, minDomain, maxDomain,
-                 offset, N - 1 + offset, N);
         }
 
         [Test]
@@ -196,32 +165,32 @@ namespace MarkovBytes.UnitTests
         [Test]
         public void SlimWindow_0()
         {
-            Assert.AreEqual(0, GenerateEvenAll(0, 0, 4, 10));
+            Assert.AreEqual(0, Solver.GenerateEvenAll(0, 0, 4, 10));
         }
 
         [Test]
         public void SlimWindow_1()
         {
-            Assert.AreEqual(1, GenerateEvenAll(0, 1, 4, 10));
+            Assert.AreEqual(1, Solver.GenerateEvenAll(0, 1, 4, 10));
         }
 
         [Test]
         public void SlimWindow_2()
         {
-            Assert.AreEqual(2, GenerateEvenAll(0, 2, 4, 10));
+            Assert.AreEqual(2, Solver.GenerateEvenAll(0, 2, 4, 10));
         }
 
         [Test]
         public void SlimWindow_3()
         {
-            Assert.AreEqual(3, GenerateEvenAll(0, 3, 4, 10));
+            Assert.AreEqual(3, Solver.GenerateEvenAll(0, 3, 4, 10));
         }
 
 
         [Test]
         public void SlimWindow_4()
         {
-            Assert.AreEqual(6, GenerateEvenAll(0, 6, 4, 10));
+            Assert.AreEqual(6, Solver.GenerateEvenAll(0, 6, 4, 10));
         }
 
         [Test]
@@ -229,31 +198,31 @@ namespace MarkovBytes.UnitTests
         {
             Assert.AreEqual(7, GetIndex(1, 10, 6, 4));
 
-            Assert.AreEqual(7, GenerateEvenAll(1, 6, 4, 10));
+            Assert.AreEqual(7, Solver.GenerateEvenAll(1, 6, 4, 10));
         }
 
         [Test]
         public void WindowOf4_0()
         {
-            Assert.AreEqual(6, GenerateEvenAll(0, 6, 4, 10));
+            Assert.AreEqual(6, Solver.GenerateEvenAll(0, 6, 4, 10));
         }
 
         [Test]
         public void WindowOf4_2()
         { 
-            Assert.AreEqual(8, GenerateEvenAll(2, 6, 4, 10));
+            Assert.AreEqual(8, Solver.GenerateEvenAll(2, 6, 4, 10));
         }
 
         [Test]
         public void WindowOf4_3()
         {
-            Assert.AreEqual(9, GenerateEvenAll(3, 6, 4, 10));
+            Assert.AreEqual(9, Solver.GenerateEvenAll(3, 6, 4, 10));
         }
 
         [Test]
         public void WindowOf4_4()
         {
-            Assert.AreEqual(9, GenerateEvenAll(4, 6, 4, 10));
+            Assert.AreEqual(9, Solver.GenerateEvenAll(4, 6, 4, 10));
         }
 
         [Test]
@@ -268,15 +237,6 @@ namespace MarkovBytes.UnitTests
             Assert.AreEqual(0, GetIndex(6, 5, 1, 5));
         }
 
-        public int GenerateEvenAll(int next, int offset, int count, int N)
-        {
-            // var normal = GetNormalized(next + offset, offset, offset + count, count);
-
-            // return GetIndex(normal, N, offset, count);
-
-            return GetEvenInRange(next, 0, count, offset, offset + count - 1, N);
-        }
-
         [Test]
         public void EvenOut_0_Rand_0()
         {
@@ -286,7 +246,7 @@ namespace MarkovBytes.UnitTests
             int next = 0;
             int expected = 1;
 
-            Assert.AreEqual(expected, GenerateEvenOut(next ,self, N));
+            Assert.AreEqual(expected, Solver.GenerateEvenOut(next ,self, N));
         }
 
         [Test]
@@ -297,7 +257,7 @@ namespace MarkovBytes.UnitTests
             int next = 0;
             int expected = 2;
 
-            Assert.AreEqual(expected, GenerateEvenOut(next, self, N));
+            Assert.AreEqual(expected, Solver.GenerateEvenOut(next, self, N));
         }
 
         [Test]
@@ -308,7 +268,7 @@ namespace MarkovBytes.UnitTests
             int next = 1;
             int EXPECTED = 3;
 
-            Assert.AreEqual(EXPECTED, GenerateEvenOut(next, self, N));
+            Assert.AreEqual(EXPECTED, Solver.GenerateEvenOut(next, self, N));
         }
 
         [Test]
@@ -319,7 +279,7 @@ namespace MarkovBytes.UnitTests
             int next = 5;
             int expected = 7;
 
-            Assert.AreEqual(expected, GenerateEvenOut(next, self, N));
+            Assert.AreEqual(expected, Solver.GenerateEvenOut(next, self, N));
         }
 
         [Test]
@@ -330,18 +290,7 @@ namespace MarkovBytes.UnitTests
             int next = 9;
             int expected = 0;
 
-            Assert.AreEqual(expected, GenerateEvenOut(next, self, N));
-        }
-
-        private int GenerateEvenOut(int next, int self, int n)
-        {
-            int left = self + 1;
-            int right = self - 1;
-
-            return GetEvenInRange(next, 0, n - 1, left, right, n);
-
-
-            //return GenerateEvenAll(next, self + 1, n - 1, n);
+            Assert.AreEqual(expected, Solver.GenerateEvenOut(next, self, N));
         }
 
         private static int GetIndex(int normal, int N, int offset, int count)
