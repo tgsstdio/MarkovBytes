@@ -1,7 +1,11 @@
 # MarkovBytes
 
-Fun experiment with fast markov chains
+ An experiment with fast markov chains for use of behavior trees
 
 ## Features
 
-- fast bitwise masking with System.Numerics's Vector/SIMD operations
+- Using SIMD operations / System.Numerics 
+
+- fast bitwise toggling with System.Numerics's Vector/SIMD operations
+
+- integer for storing probabilities
