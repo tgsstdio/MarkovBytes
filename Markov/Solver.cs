@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Markov
+﻿namespace Markov
 {
     public class Solver
     {
@@ -90,11 +88,16 @@ namespace Markov
             int shift = (numRand * windowSize) / maxRand;
 
             // BOUNDED VALUES 100% => < 1.0
-            int offset = Math.Clamp(shift, 0, domain);
+            int offset = Clamp(shift, 0, domain);
             // ? windowSize - 1 // LAST VALUE
             // : shift;
 
             return (left + offset) % arrayLength;
+        }
+
+        private static int Clamp(int value, int min, int max)
+        {
+            return (value < min) ? min : (value > max) ? max : value;
         }
 
         public static int GetEvenAllTransistion(

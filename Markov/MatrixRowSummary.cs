@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Markov
+﻿namespace Markov
 {
     public class MatrixRowSummary
     {
@@ -8,7 +6,7 @@ namespace Markov
         public int NoOfNonZeroPercents { get; set; }
         public ushort? SelfPercent { get; set; }
         public ValueCluster[] Clusters { get; set; }
-        public int NoOfStates { get; internal set; }
-        public int Row { get; internal set; }
+        public int NoOfStates { get; set; }
+        public int Row { get; set; }
     }
 }

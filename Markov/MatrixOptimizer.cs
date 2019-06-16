@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Markov
 {
@@ -46,7 +45,7 @@ namespace Markov
         }
 
         private MatrixRowSummary Investigate2DArray(int i, int noOfStates, ushort[,] matrix)
-        {           
+        {
             var summary = new MatrixRowSummary
             {
                 Row = i,
@@ -106,7 +105,7 @@ namespace Markov
 
             return new MatrixSolution
             {
-              //  Original = grids,
+                //  Original = grids,
                 NoOfStates = noOfStates,
                 IsOptimized = isOptimized,
                 Rows = solutions.ToArray(),
@@ -238,7 +237,7 @@ namespace Markov
                     var right = stats.Row - 1;
                     var domain = Solver.GetDomain(
                         left,
-                        right, 
+                        right,
                         stats.NoOfStates);
 
                     return new MatrixRowSolution
