@@ -4,14 +4,14 @@ namespace Markov
 {
     public class Solver
     {
-        private readonly Random mRand;
+        private readonly IRandomNumberGenerator mRNG;
         private readonly MatrixSolution mMatrix;
 
         public int MaxRandomizedValue { get; private set; }
 
-        public Solver(MatrixSolution matrix)
+        public Solver(IRandomNumberGenerator rng, MatrixSolution matrix)
         {
-            mRand = new System.Random();
+            mRNG = rng;
             mMatrix = matrix;
         }
 
@@ -35,7 +35,7 @@ namespace Markov
                     return true;
                 case SolutionType.EvenAll:
                 case SolutionType.EvenOut:
-                    int value = mRand.Next(MaxRandomizedValue);
+                    int value = mRNG.Next(MaxRandomizedValue);
                     next = GetEvenInRange(value,
                         MaxRandomizedValue,
                         current.Left,

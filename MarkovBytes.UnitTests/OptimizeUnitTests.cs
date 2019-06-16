@@ -16,7 +16,7 @@ namespace MarkovBytes.UnitTests
             // TAKE N x N matrix
             const int COUNT = 8;
             var row = new ushort[COUNT];
-            var result = optimizer.Investigate(0, row);
+            var result = optimizer.Investigate1DArray(0, row);
 
             Assert.AreEqual(COUNT, result.NoOfStates);
             Assert.AreEqual(0, result.NoOfNonZeroPercents);
@@ -217,7 +217,7 @@ namespace MarkovBytes.UnitTests
             const ushort SELF_PERCENT = 100;
             var row = new ushort[] { SELF_PERCENT, 200, 300, 400 };
             var optimizer = new MatrixOptimizer();
-            var result = optimizer.Investigate(0, row);
+            var result = optimizer.Investigate1DArray(0, row);
 
             Assert.AreEqual(COUNT, result.NoOfStates);
             Assert.AreEqual(COUNT, result.NoOfNonZeroPercents);
@@ -237,7 +237,7 @@ namespace MarkovBytes.UnitTests
             const int EXPECTED_4 = 50;
             var row = new ushort[] { EXPECTED_4, EXPECTED_3, EXPECTED_1, EXPECTED_2 };
             var optimizer = new MatrixOptimizer();
-            var result = optimizer.Investigate(0, row);
+            var result = optimizer.Investigate1DArray(0, row);
 
             Assert.AreEqual(COUNT, result.NoOfStates);
             Assert.AreEqual(COUNT, result.NoOfNonZeroPercents);
@@ -287,7 +287,7 @@ namespace MarkovBytes.UnitTests
             const int EXPECTED_1 = 1000;
             var row = new ushort[] { EXPECTED_1, EXPECTED_1, EXPECTED_1 };
             var optimizer = new MatrixOptimizer();
-            var result = optimizer.Investigate(0, row);
+            var result = optimizer.Investigate1DArray(0, row);
 
             Assert.AreEqual(COUNT, result.NoOfStates);
             Assert.AreEqual(COUNT, result.NoOfNonZeroPercents);
@@ -312,7 +312,7 @@ namespace MarkovBytes.UnitTests
             const int COUNT = 0;
             var row = new ushort[] { };
             var optimizer = new MatrixOptimizer();
-            var result = optimizer.Investigate(0, row);
+            var result = optimizer.Investigate1DArray(0, row);
 
             Assert.AreEqual(COUNT, result.NoOfStates);
             Assert.AreEqual(COUNT, result.NoOfNonZeroPercents);

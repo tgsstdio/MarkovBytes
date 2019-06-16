@@ -1,6 +1,6 @@
 ﻿namespace Markov
 {
-    public struct MatrixSolutionRow
+    public struct MatrixRowSolution
     {
         public SolutionType Approach { get; set; }
         public int Branch { get; set; }
