@@ -6,6 +6,6 @@ namespace Markov
     {
         public int LeafLength { get; set; }
         public int LeafOffset { get; set; }
-        public Vector<ushort> Keys { get; set; }
+        public int KeyOffset { get; set; }        
     }    
 }

@@ -54,11 +54,9 @@ namespace MarkovBytes.UnitTests
             var offset = 0;
             for (var i = 0; i < branch.NoOfBuckets; i += 1)
             {
-                var window = new Span<ushort>(branch.Keys, offset, BUCKET_SIZE);
-
                 chunks[i] = new TestChunk
                 {
-                    Keys = new Vector<ushort>(window),
+                    KeyOffset = offset,
                     LeafOffset = offset,
                     LeafLength = (i < wholeBuckets) ? BUCKET_SIZE : remainder,
                 };
@@ -118,11 +116,6 @@ namespace MarkovBytes.UnitTests
         [Test]
         public void GetBranch_01()
         {
-            var BRANCH_VALUES = new ushort[]
-            {
-                1,
-            };
-
             var actual = CreateRowBranch(1);
             Assert.IsNotNull(actual);
             Assert.IsNotNull(actual.Keys);

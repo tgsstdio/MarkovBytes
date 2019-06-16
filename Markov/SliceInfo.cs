@@ -4,7 +4,7 @@
     {
         public ushort[] Branches { get; set; }
         public int[] Leaves { get; set; }
-        public int TotalNonZeros { get; internal set; }
-        public int TotalStates { get; internal set; }
+        public int TotalNonZeros { get; set; }
+        public int TotalStates { get; set; }
     }    
 }
