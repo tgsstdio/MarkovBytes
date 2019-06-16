@@ -1,5 +1,4 @@
-﻿using Markov;
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace Markov
@@ -20,13 +19,13 @@ namespace Markov
             if (length >= 1)
             {
                 // create first node is cutoff
-                masks.Add(0x1);
+                masks.Add(0x1); // SAME FOR 32 key bucket
             }
 
             if (length >= 2)
             {
                 // create second node is 15 item check
-                masks.Add(0xfffe);
+                masks.Add(0xfffe); // 0xffff_fffe for 32 key bucket
             }
 
             if (length > 15)
@@ -39,7 +38,7 @@ namespace Markov
 
                 for (var i = 0; i < noOfNodes; i += 1)
                 {
-                    masks.Add(0xffff);
+                    masks.Add(0xffff); // 0xffff_ffff for 32 key bucket
                 }
 
                 if (rem > 0)
@@ -47,10 +46,10 @@ namespace Markov
                     ushort lastMask = 0;
                     for (var i = 0; i < rem; i += 1)
                     {
-                        lastMask |= (ushort)(1 << i);
+                        lastMask |= (ushort)(1 << i); 
                     }
 
-                    masks.Add(lastMask);
+                    masks.Add(lastMask); // SAME FOR 32 key bucket
                 }
             }
 
