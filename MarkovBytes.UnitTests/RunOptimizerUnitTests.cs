@@ -18,12 +18,19 @@ namespace MarkovBytes.UnitTests
                 new ushort[]{0 , 0 ,0 , 0},
             };
 
+            const ushort MAX_PROBABILITY = 100;
             IMatrixOptimizer optimizer = new MatrixOptimizer
             {
-                MaxProbability = 100
+
             };
 
-            var solution = optimizer.Optimize(source);
+            ushort[] rowDenominators = new[] {
+                MAX_PROBABILITY,
+                MAX_PROBABILITY,
+                MAX_PROBABILITY,
+                MAX_PROBABILITY,
+            };
+            var solution = optimizer.Optimize(rowDenominators, source);
             Assert.IsNotNull(solution);
             Assert.IsNotNull(solution.Rows);
             Assert.IsTrue(solution.IsOptimized);
@@ -48,10 +55,14 @@ namespace MarkovBytes.UnitTests
 
             IMatrixOptimizer optimizer = new MatrixOptimizer
             {
-                MaxProbability = 1
+  
             };
 
-            var solution = optimizer.Optimize(source);
+            const ushort MaxProbability = 1;
+
+            var rowDenominators = new[] { MaxProbability, MaxProbability, MaxProbability, MaxProbability };
+
+            var solution = optimizer.Optimize(rowDenominators, source);
             Assert.IsNotNull(solution);
 
             Assert.AreEqual(4, solution.NoOfStates);

@@ -6,5 +6,6 @@
         public int Branch { get; set; }
         public int Left { get; set; }
         public int Domain { get; set; }
+        public ushort RowDenominator { get; set; }
     }
 }

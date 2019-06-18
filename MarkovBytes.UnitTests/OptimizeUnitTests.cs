@@ -33,8 +33,9 @@ namespace MarkovBytes.UnitTests
                 NoOfZeroPercents = 4
             };
 
+            const ushort ROW_DENOMINATOR = 0;
             var optimizer = new MatrixOptimizer();
-            var result = optimizer.Evaluate(stats);
+            var result = optimizer.Evaluate(ROW_DENOMINATOR, stats);
             Assert.AreEqual(SolutionType.NoOperation, result.Approach);
         }
 
@@ -43,10 +44,7 @@ namespace MarkovBytes.UnitTests
         {
 
             const ushort MAX_VALUE = ushort.MaxValue;
-            var optimizer = new MatrixOptimizer
-            {
-                MaxProbability = MAX_VALUE
-            };
+            var optimizer = new MatrixOptimizer();
 
             const int EXPECTED_RESULT = 2;
             const int OTHER_BRANCH = 1;
@@ -69,7 +67,7 @@ namespace MarkovBytes.UnitTests
             };
    
 
-            var result = optimizer.Evaluate(stats);
+            var result = optimizer.Evaluate(MAX_VALUE, stats);
             Assert.AreEqual(SolutionType.Redirect, result.Approach);
             Assert.AreEqual(EXPECTED_RESULT, result.Branch);
         }
@@ -84,7 +82,6 @@ namespace MarkovBytes.UnitTests
             const ushort MAX_VALUE = ushort.MaxValue;
             var optimizer = new MatrixOptimizer
             {
-                MaxProbability = MAX_VALUE
             };
 
             const int OTHER = 1;
@@ -104,7 +101,7 @@ namespace MarkovBytes.UnitTests
                 NoOfZeroPercents = 1
             };
 
-            var result = optimizer.Evaluate(stats);
+            var result = optimizer.Evaluate(MAX_VALUE, stats);
             Assert.AreEqual(SolutionType.Redirect, result.Approach);
             Assert.AreEqual(EXPECTED_RESULT, result.Branch);
         }
@@ -115,7 +112,6 @@ namespace MarkovBytes.UnitTests
             const ushort MAX_VALUE = ushort.MaxValue;
             var optimizer = new MatrixOptimizer
             {
-                MaxProbability = MAX_VALUE
             };
 
             const int EXPECTED_RESULT = 3;
@@ -135,7 +131,7 @@ namespace MarkovBytes.UnitTests
                 NoOfZeroPercents = 1
             };
 
-            var result = optimizer.Evaluate(stats);
+            var result = optimizer.Evaluate(MAX_VALUE, stats);
             Assert.AreEqual(SolutionType.DeadEnd, result.Approach);
             Assert.AreEqual(EXPECTED_RESULT, result.Branch);
         }
@@ -164,11 +160,12 @@ namespace MarkovBytes.UnitTests
                 },
             };
 
+            const ushort MAX_PROBABILITY = 100;
             var optimizer = new MatrixOptimizer
             {
-                MaxProbability = 100
+
             };
-            var result = optimizer.Evaluate(stats);
+            var result = optimizer.Evaluate(MAX_PROBABILITY, stats);
             Assert.AreEqual(SolutionType.Unoptimized, result.Approach);
         }
 
@@ -201,11 +198,12 @@ namespace MarkovBytes.UnitTests
                 },
             };
 
+            const ushort MAX_PROBABILITY = 100;
             var optimizer = new MatrixOptimizer
             {
-                MaxProbability = 100
+
             };
-            var result = optimizer.Evaluate(stats);
+            var result = optimizer.Evaluate(MAX_PROBABILITY, stats);
             Assert.AreEqual(SolutionType.Unoptimized, result.Approach);
         }
 

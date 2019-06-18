@@ -4,8 +4,6 @@ namespace Markov
 {
     public class MatrixOptimizer : IMatrixOptimizer
     {
-        public ushort MaxProbability { get; set; }
-
         class HigherPercentComparer : Comparer<ushort>
         {
             public override int Compare(ushort x, ushort y)
@@ -20,7 +18,7 @@ namespace Markov
             }
         }
 
-        public MatrixSolution Optimize(ushort[,] matrix)
+        public MatrixSolution Optimize(ushort[] rowDenominators, ushort[,] matrix)
         {
             var noOfRows = matrix.GetLength(0);
             var noOfColumns = matrix.GetLength(1);
@@ -32,7 +30,7 @@ namespace Markov
             for (var i = 0; i < noOfStates; i += 1)
             {
                 var summary = Investigate2DArray(i, noOfStates, matrix);
-                solutions.Add(Evaluate(summary));
+                solutions.Add(Evaluate(rowDenominators[i], summary));
             }
 
             return CreateSolution(solutions, noOfStates);
@@ -71,7 +69,7 @@ namespace Markov
         }
 
 
-        public MatrixSolution Optimize(ushort[][] rows)
+        public MatrixSolution Optimize(ushort[] rowDenominators, ushort[][] rows)
         {
             int noOfStates = rows.Length;
 
@@ -86,7 +84,7 @@ namespace Markov
             for (var i = 0; i < noOfStates; i += 1)
             {
                 var summary = Investigate1DArray(i, rows[i]);
-                solutions.Add(Evaluate(summary));
+                solutions.Add(Evaluate(rowDenominators[i], summary));
             }
             return CreateSolution(solutions, noOfStates);
         }
@@ -182,28 +180,30 @@ namespace Markov
             }
         }
 
-        public MatrixRowSolution Evaluate(MatrixRowSummary stats)
+        public MatrixRowSolution Evaluate(ushort rowDenominator, MatrixRowSummary summary)
         {
-            if (stats.NoOfStates == stats.NoOfZeroPercents)
+            if (summary.NoOfStates == summary.NoOfZeroPercents)
             {
                 return new MatrixRowSolution
                 {
                     Approach = SolutionType.NoOperation,
+                    RowDenominator = rowDenominator,
                 };
             }
 
-            if (stats.Clusters.Length == 1)
+            if (summary.Clusters.Length == 1)
             {
-                var top = stats.Clusters[0];
+                var top = summary.Clusters[0];
 
-                if (top.Value == MaxProbability && top.NoOfTimes == 1)
+                if (top.Value == rowDenominator && top.NoOfTimes == 1)
                 {
-                    if (stats.Row == top.First)
+                    if (summary.Row == top.First)
                     {
                         return new MatrixRowSolution
                         {
                             Approach = SolutionType.DeadEnd,
                             Branch = top.First,
+                            RowDenominator = rowDenominator,
                         };
                     }
 
@@ -212,40 +212,43 @@ namespace Markov
                     {
                         Approach = SolutionType.Redirect,
                         Branch = top.First,
+                        RowDenominator = rowDenominator,
                     };
                 }
-                if (stats.NoOfNonZeroPercents == stats.NoOfStates)
+                if (summary.NoOfNonZeroPercents == summary.NoOfStates)
                 {
                     // TODO: check for consecutive non-zeros
                     int left = 0;
-                    int count = stats.NoOfNonZeroPercents;
+                    int count = summary.NoOfNonZeroPercents;
                     int right = left + count - 1;
-                    int domain = Solver.GetDomain(left, right, stats.NoOfStates);
+                    int domain = Solver.GetDomain(left, right, summary.NoOfStates);
 
                     return new MatrixRowSolution
                     {
                         Approach = SolutionType.EvenAll,
-                        Branch = stats.Row,
+                        Branch = summary.Row,
                         Domain = domain,
+                        RowDenominator = rowDenominator,
                     };
                 }
 
-                if (!stats.SelfPercent.HasValue
-                  && stats.NoOfNonZeroPercents == stats.NoOfStates - 1)
+                if (!summary.SelfPercent.HasValue
+                  && summary.NoOfNonZeroPercents == summary.NoOfStates - 1)
                 {
-                    var left = stats.Row + 1;
-                    var right = stats.Row - 1;
+                    var left = summary.Row + 1;
+                    var right = summary.Row - 1;
                     var domain = Solver.GetDomain(
                         left,
                         right,
-                        stats.NoOfStates);
+                        summary.NoOfStates);
 
                     return new MatrixRowSolution
                     {
                         Approach = SolutionType.EvenOut,
-                        Branch = stats.Row,
+                        Branch = summary.Row,
                         Left = left,
                         Domain = domain,
+                        RowDenominator = rowDenominator,
                     };
                 }
             }
@@ -254,6 +257,7 @@ namespace Markov
             return new MatrixRowSolution
             {
                 Approach = SolutionType.Unoptimized,
+                RowDenominator = rowDenominator,
             };
 
         }
