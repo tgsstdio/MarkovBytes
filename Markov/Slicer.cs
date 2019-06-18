@@ -207,10 +207,10 @@ namespace Markov
         public static void CopyBranchNodes(ushort[] src, int offset, int srcLength, int dstLength, RowBranch result)
         {
             // TODO: if majority exists, insert as index 0
-
-            var srcSpan = new Span<ushort>(src, offset, srcLength);
-            var dstSpan = new Span<ushort>(result.Keys, 0, dstLength);
-            srcSpan.CopyTo(dstSpan);
+            for (var i = offset; i < srcLength; i += 1)
+            {
+                result.Keys[i] = src[i];
+            }
 
             for (var i = srcLength; i < dstLength; i += 1)
             {
