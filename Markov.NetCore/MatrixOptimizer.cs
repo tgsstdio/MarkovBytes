@@ -30,8 +30,7 @@ namespace Markov
             for (var i = 0; i < noOfStates; i += 1)
             {
                 var summary = Investigate2DArray(i, noOfStates, matrix);
-                MatrixRowSolution item = Evaluate(rowDenominators[i], summary);
-                solutions.Add(item);
+                solutions.Add(Evaluate(rowDenominators[i], summary));
             }
 
             return CreateSolution(solutions, noOfStates);
@@ -85,8 +84,7 @@ namespace Markov
             for (var i = 0; i < noOfStates; i += 1)
             {
                 var summary = Investigate1DArray(i, rows[i]);
-                MatrixRowSolution item = Evaluate(rowDenominators[i], summary);
-                solutions.Add(item);
+                solutions.Add(Evaluate(rowDenominators[i], summary));
             }
             return CreateSolution(solutions, noOfStates);
         }

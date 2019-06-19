@@ -6,13 +6,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MarkovBytes", "MarkovBytes\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MarkovBytes.UnitTests", "MarkovBytes.UnitTests\MarkovBytes.UnitTests.csproj", "{9D3B75A4-EC9A-4E31-A4A7-C446198B89AD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Markov", "Markov\Markov.csproj", "{5966A241-8D65-4FFA-A80F-EFC1C9EF2362}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NarrowWiden", "NarrowWiden\NarrowWiden\NarrowWiden.csproj", "{11111530-B63E-49F5-83B6-A387FDE9DF2D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SetBitwise16BitMask.Benchmarks", "NarrowWiden\SetBitwise16BitMask.Benchmarks\SetBitwise16BitMask.Benchmarks.csproj", "{4A9743D5-7383-4082-B368-C9DEBEDF9C43}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SetBitwise32BitMask.Benchmarks", "NarrowWiden\SetBitwise32BitMask.Benchmarks\SetBitwise32BitMask.Benchmarks.csproj", "{11CBD0FB-A1A8-4EE1-86F9-65EA4F529CD0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Markov.NetCore", "Markov.NetCore\Markov.NetCore.csproj", "{14C391BD-7107-4C0D-9B88-779424366598}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -28,10 +28,6 @@ Global
 		{9D3B75A4-EC9A-4E31-A4A7-C446198B89AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9D3B75A4-EC9A-4E31-A4A7-C446198B89AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9D3B75A4-EC9A-4E31-A4A7-C446198B89AD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5966A241-8D65-4FFA-A80F-EFC1C9EF2362}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5966A241-8D65-4FFA-A80F-EFC1C9EF2362}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5966A241-8D65-4FFA-A80F-EFC1C9EF2362}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5966A241-8D65-4FFA-A80F-EFC1C9EF2362}.Release|Any CPU.Build.0 = Release|Any CPU
 		{11111530-B63E-49F5-83B6-A387FDE9DF2D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{11111530-B63E-49F5-83B6-A387FDE9DF2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{11111530-B63E-49F5-83B6-A387FDE9DF2D}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -44,6 +40,10 @@ Global
 		{11CBD0FB-A1A8-4EE1-86F9-65EA4F529CD0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{11CBD0FB-A1A8-4EE1-86F9-65EA4F529CD0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{11CBD0FB-A1A8-4EE1-86F9-65EA4F529CD0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{14C391BD-7107-4C0D-9B88-779424366598}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{14C391BD-7107-4C0D-9B88-779424366598}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{14C391BD-7107-4C0D-9B88-779424366598}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{14C391BD-7107-4C0D-9B88-779424366598}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

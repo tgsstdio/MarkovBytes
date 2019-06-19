@@ -11,13 +11,14 @@ namespace MarkovBytes.UnitTests
         public void Deadend_0()
         {
             var rng = new Mock<IRandomNumberGenerator>();
+            var evaluator = new Mock<INodeEvaluator>();
+            var bitAnalyser = new Mock<IBitAnalyser>();
+            var stepper = new Stepper(evaluator.Object, bitAnalyser.Object);
 
-            var machine = new Solver(
-                rng.Object,
-                new MatrixSolution
-                {
-                    IsOptimized = true,
-                    Rows = new[]
+            MatrixSolution matrixSolution = new MatrixSolution
+            {
+                IsOptimized = true,
+                Rows = new[]
                     {
                         new MatrixRowSolution
                         {
@@ -25,11 +26,14 @@ namespace MarkovBytes.UnitTests
                             Approach = SolutionType.DeadEnd,
                         },
                     }
-                }
+            };
+            var machine = new Solver(
+                rng.Object,
+                stepper
             );
-            Assert.IsTrue(machine.Resolve(0, out int next));
+            Assert.IsTrue(machine.Resolve(matrixSolution, 0, out int next));
             Assert.AreEqual(0, next);
-            Assert.IsTrue(machine.Resolve(0, out int next1));
+            Assert.IsTrue(machine.Resolve(matrixSolution, 0, out int next1));
             Assert.AreEqual(0, next1);
         }
 
@@ -37,14 +41,15 @@ namespace MarkovBytes.UnitTests
         public void Deadend_1()
         {
             var rng = new Mock<IRandomNumberGenerator>();
+            var evaluator = new Mock<INodeEvaluator>();
+            var bitAnalyser = new Mock<IBitAnalyser>();
+            var stepper = new Stepper(evaluator.Object, bitAnalyser.Object);
 
-            var machine = new Solver(
-                rng.Object,
-                new MatrixSolution
-                {
+            var solution = new MatrixSolution
+            {
 
-                    IsOptimized = true,
-                    Rows = new[]
+                IsOptimized = true,
+                Rows = new[]
                     {
                         new MatrixRowSolution
                         {
@@ -57,11 +62,15 @@ namespace MarkovBytes.UnitTests
                             Approach = SolutionType.DeadEnd,
                         },
                     }
-                }
+            };
+
+            var machine = new Solver(
+                rng.Object,
+                stepper
             );
-            Assert.IsTrue(machine.Resolve(1, out int next));
+            Assert.IsTrue(machine.Resolve(solution, 1, out int next));
             Assert.AreEqual(1, next);
-            Assert.IsTrue(machine.Resolve(1, out int next1));
+            Assert.IsTrue(machine.Resolve(solution, 1, out int next1));
             Assert.AreEqual(1, next1);
         }
     }

@@ -20,7 +20,6 @@ namespace MarkovBytes.UnitTests
         [Test]
         public void EvenAll()
         {
-            var minDomain = 0;
             var maxDomain = 100;
 
             var N = 10;
@@ -41,7 +40,6 @@ namespace MarkovBytes.UnitTests
         [Test]
         public void EvenAllOffset()
         {
-            var minDomain = 0;
             var maxDomain = 100;
 
             var N = 10;
@@ -60,7 +58,6 @@ namespace MarkovBytes.UnitTests
         [Test]
         public void EvenAllOffset_2()
         {
-            var minDomain = 0;
             var maxDomain = 100;
 
             var N = 10;
@@ -73,7 +70,6 @@ namespace MarkovBytes.UnitTests
         [Test]
         public void EvenAllOffset_3()
         {
-            var minDomain = 0;
             var maxDomain = 100;
 
             var N = 10;
@@ -86,7 +82,6 @@ namespace MarkovBytes.UnitTests
         [Test]
         public void EvenAllOffset_4()
         {
-            var minDomain = 0;
             var maxDomain = 100;
 
             var N = 10;
@@ -112,7 +107,6 @@ namespace MarkovBytes.UnitTests
         [Test]
         public void EvenAllOffset_6()
         {
-            var minDomain = 0;
             var maxDomain = 100;
 
             var N = 10;
