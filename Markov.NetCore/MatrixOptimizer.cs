@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Markov
 {
@@ -18,6 +19,12 @@ namespace Markov
             }
         }
 
+        private ISlicer mSlicer;
+        public MatrixOptimizer(ISlicer slicer)
+        {
+            mSlicer = slicer;
+        }
+
         public MatrixSolution Optimize(ushort[] rowDenominators, ushort[,] matrix)
         {
             var noOfRows = matrix.GetLength(0);
@@ -27,14 +34,51 @@ namespace Markov
             var solutions = new List<MatrixRowSolution>();
             var noOfStates = noOfRows;
 
+            var trees = new List<RowTree>();
             for (var i = 0; i < noOfStates; i += 1)
             {
                 var summary = Investigate2DArray(i, noOfStates, matrix);
-                solutions.Add(Evaluate(rowDenominators[i], summary));
-            }
 
-            return CreateSolution(solutions, noOfStates);
+                var solutionType = GetSolutionType(rowDenominators[i], summary);
+                var item = new MatrixRowSolution
+                {
+                    Approach = solutionType,
+                    RowDenominator = rowDenominators[i],
+                    Branch = GetBranch(solutionType, summary),
+                    Left = GetLeft(solutionType, summary),
+                    Domain = GetDomain(solutionType, summary),
+                    Tree = GenerateTreeFromMatrix(solutionType, trees, i, matrix),
+                };
+
+                solutions.Add(item);
+            }
+            return CreateSolution(solutions, noOfStates, trees);
         }
+
+        private int GenerateTreeFromMatrix(SolutionType solutionType, List<RowTree> trees, int i, ushort[,] matrix)
+        {
+            switch(solutionType) {
+                case SolutionType.Sparse:
+                case SolutionType.Unoptimized:
+                    trees.Add(mSlicer.SliceMatrix(i, matrix));
+                    return trees.Count - 1;            
+                default:
+                    return -1;
+            }
+        }
+
+        private int GenerateTreeFromArray(SolutionType solutionType, List<RowTree> trees, ushort[] input)
+        {
+            switch (solutionType)
+            {
+                case SolutionType.Sparse:
+                case SolutionType.Unoptimized:
+                    trees.Add(mSlicer.SliceRow(input));
+                    return trees.Count - 1;
+                default:
+                    return -1;
+            }
+        }    
 
         private static void ValidateDimensions(int noOfRows, int noOfColumns)
         {
@@ -80,16 +124,70 @@ namespace Markov
             }
 
             var solutions = new List<MatrixRowSolution>();
+            var trees = new List<RowTree>();
 
             for (var i = 0; i < noOfStates; i += 1)
             {
                 var summary = Investigate1DArray(i, rows[i]);
-                solutions.Add(Evaluate(rowDenominators[i], summary));
+                var solutionType = GetSolutionType(rowDenominators[i], summary);
+                var item = new MatrixRowSolution
+                {
+                    Approach = solutionType,
+                    RowDenominator = rowDenominators[i],
+                    Branch = GetBranch(solutionType, summary),
+                    Left = GetLeft(solutionType, summary),
+                    Domain = GetDomain(solutionType, summary),
+                    Tree = GenerateTreeFromArray(solutionType, trees, rows[i]),
+                };
+
+                solutions.Add(item);
             }
-            return CreateSolution(solutions, noOfStates);
+            return CreateSolution(solutions, noOfStates, trees);
         }
 
-        private static MatrixSolution CreateSolution(List<MatrixRowSolution> solutions, int noOfStates)
+        private int GetDomain(SolutionType approach, MatrixRowSummary summary)
+        {                
+            switch (approach)
+            {
+                case SolutionType.EvenAll:
+                    return Solver.GetDomain(0, summary.NoOfNonZeroPercents - 1, summary.NoOfStates);
+                case SolutionType.EvenOut:
+                    return Solver.GetDomain(
+                        summary.Row + 1,
+                        summary.Row - 1,
+                        summary.NoOfStates);
+                default:
+                    return default(int);
+            }
+        }
+
+
+        private int GetLeft(SolutionType approach, MatrixRowSummary summary)
+        {
+            switch (approach)
+            {
+                case SolutionType.EvenOut:
+                    return summary.Row + 1;
+                default:
+                    return default(int);
+            }
+        }
+
+        private static int GetBranch(SolutionType approach, MatrixRowSummary summary)
+        {
+           switch(approach) {
+                case SolutionType.DeadEnd:
+                case SolutionType.Redirect:                
+                    return summary.Clusters[0].First;
+                case SolutionType.EvenAll:
+                case SolutionType.EvenOut:
+                    return summary.Row;
+                default:
+                    return default(int);
+            }
+        }
+
+        private static MatrixSolution CreateSolution(List<MatrixRowSolution> solutions, int noOfStates, List<RowTree> trees)
         {
             bool isOptimized = false;
             foreach (var row in solutions)
@@ -107,6 +205,7 @@ namespace Markov
                 NoOfStates = noOfStates,
                 IsOptimized = isOptimized,
                 Rows = solutions.ToArray(),
+                Trees = trees.ToArray(),
             };
         }
 
@@ -180,86 +279,52 @@ namespace Markov
             }
         }
 
-        public MatrixRowSolution Evaluate(ushort rowDenominator, MatrixRowSummary summary)
+        public static SolutionType GetSolutionType(ushort rowDenominator, MatrixRowSummary summary)
         {
             if (summary.NoOfStates == summary.NoOfZeroPercents)
             {
-                return new MatrixRowSolution
-                {
-                    Approach = SolutionType.NoOperation,
-                    RowDenominator = rowDenominator,
-                };
+                return SolutionType.NoOperation;
             }
 
             if (summary.Clusters.Length == 1)
             {
-                var top = summary.Clusters[0];
-
-                if (top.Value == rowDenominator && top.NoOfTimes == 1)
+                if (summary.Clusters[0].Value == rowDenominator && summary.Clusters[0].NoOfTimes == 1)
                 {
-                    if (summary.Row == top.First)
-                    {
-                        return new MatrixRowSolution
-                        {
-                            Approach = SolutionType.DeadEnd,
-                            Branch = top.First,
-                            RowDenominator = rowDenominator,
-                        };
-                    }
-
-                    // ELSE REDIRECT
-                    return new MatrixRowSolution
-                    {
-                        Approach = SolutionType.Redirect,
-                        Branch = top.First,
-                        RowDenominator = rowDenominator,
-                    };
+                    return summary.Row == summary.Clusters[0].First ? SolutionType.DeadEnd : SolutionType.Redirect;
                 }
+
                 if (summary.NoOfNonZeroPercents == summary.NoOfStates)
                 {
-                    // TODO: check for consecutive non-zeros
-                    int left = 0;
-                    int count = summary.NoOfNonZeroPercents;
-                    int right = left + count - 1;
-                    int domain = Solver.GetDomain(left, right, summary.NoOfStates);
-
-                    return new MatrixRowSolution
-                    {
-                        Approach = SolutionType.EvenAll,
-                        Branch = summary.Row,
-                        Domain = domain,
-                        RowDenominator = rowDenominator,
-                    };
+                    return SolutionType.EvenAll;
                 }
 
                 if (!summary.SelfPercent.HasValue
                   && summary.NoOfNonZeroPercents == summary.NoOfStates - 1)
                 {
-                    var left = summary.Row + 1;
-                    var right = summary.Row - 1;
-                    var domain = Solver.GetDomain(
-                        left,
-                        right,
-                        summary.NoOfStates);
-
-                    return new MatrixRowSolution
-                    {
-                        Approach = SolutionType.EvenOut,
-                        Branch = summary.Row,
-                        Left = left,
-                        Domain = domain,
-                        RowDenominator = rowDenominator,
-                    };
+                    return SolutionType.EvenOut;
                 }
             }
 
-            //else DEFAULT
+            if (summary.NoOfNonZeroPercents < summary.NoOfStates)
+            {
+                return SolutionType.Sparse;
+            }
+
+            return SolutionType.Unoptimized;
+        }
+
+        public MatrixRowSolution Evaluate(ushort rowDenominator, MatrixRowSummary summary)
+        {
+            var solutionType = GetSolutionType(rowDenominator, summary);
+
             return new MatrixRowSolution
             {
-                Approach = SolutionType.Unoptimized,
+                Approach = solutionType,
                 RowDenominator = rowDenominator,
+                Branch = GetBranch(solutionType, summary),
+                Left = GetLeft(solutionType, summary),
+                Domain = GetDomain(solutionType, summary),
             };
-
         }
     }
 

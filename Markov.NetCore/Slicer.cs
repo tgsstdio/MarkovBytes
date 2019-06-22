@@ -219,5 +219,39 @@ namespace Markov
                 result.Keys[i] = ushort.MaxValue;
             }
         }
+
+        public RowTree SliceMatrix(int i, ushort[,] matrix)
+        {
+            var info = ArrangeMatrixRow(i , matrix);
+            return ProcessRow(info);
+        }
+
+        public static SliceInfo ArrangeMatrixRow(int i, ushort[,] matrix)
+        {
+            ushort total = 0;
+            var leaves = new List<int>();
+            var branches = new List<ushort>();
+            var count = matrix.GetLength(1);
+
+            var nonZeros = 0;
+            for (var j = 0; j < count; j += 1)
+            {
+                var percent = matrix[i, j];
+                if (percent > 0)
+                {
+                    total += percent;
+                    leaves.Add(j);
+                    branches.Add(total);
+                    nonZeros += 1;
+                }
+            }
+            return new SliceInfo
+            {
+                TotalStates = count,
+                TotalNonZeros = nonZeros,
+                Leaves = leaves.ToArray(),
+                Branches = branches.ToArray(),
+            };
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using Markov;
+using Moq;
 using NUnit.Framework;
 
 namespace MarkovBytes.UnitTests
@@ -11,7 +12,8 @@ namespace MarkovBytes.UnitTests
         [Test]
         public void CheckAllZeros_SingleRow()
         {
-            var optimizer = new MatrixOptimizer();
+            var slicer = new Mock<ISlicer>();
+            var optimizer = new MatrixOptimizer(slicer.Object);
 
             // TAKE N x N matrix
             const int COUNT = 8;
@@ -34,7 +36,8 @@ namespace MarkovBytes.UnitTests
             };
 
             const ushort ROW_DENOMINATOR = 0;
-            var optimizer = new MatrixOptimizer();
+            var slicer = new Mock<ISlicer>();
+            var optimizer = new MatrixOptimizer(slicer.Object);
             var result = optimizer.Evaluate(ROW_DENOMINATOR, stats);
             Assert.AreEqual(SolutionType.NoOperation, result.Approach);
         }
@@ -44,7 +47,8 @@ namespace MarkovBytes.UnitTests
         {
 
             const ushort MAX_VALUE = ushort.MaxValue;
-            var optimizer = new MatrixOptimizer();
+            var slicer = new Mock<ISlicer>();
+            var optimizer = new MatrixOptimizer(slicer.Object);
 
             const int EXPECTED_RESULT = 2;
             const int OTHER_BRANCH = 1;
@@ -80,9 +84,8 @@ namespace MarkovBytes.UnitTests
             const int EXPECTED_RESULT = 3;
 
             const ushort MAX_VALUE = ushort.MaxValue;
-            var optimizer = new MatrixOptimizer
-            {
-            };
+            var slicer = new Mock<ISlicer>();
+            var optimizer = new MatrixOptimizer(slicer.Object);
 
             const int OTHER = 1;
             var stats = new MatrixRowSummary
@@ -110,9 +113,9 @@ namespace MarkovBytes.UnitTests
         public void Evaluate_DeadEnd_0()
         {
             const ushort MAX_VALUE = ushort.MaxValue;
-            var optimizer = new MatrixOptimizer
-            {
-            };
+            var slicer = new Mock<ISlicer>();
+
+            var optimizer = new MatrixOptimizer(slicer.Object);
 
             const int EXPECTED_RESULT = 3;
             var stats = new MatrixRowSummary
@@ -139,15 +142,17 @@ namespace MarkovBytes.UnitTests
         [Test]
         public void Evaluate_Unoptimized_0()
         {
-            const int PERCENT_0 = 65;
+            const int PERCENT_0 = 60;
             const int PERCENT_1 = 35;
+            const int PERCENT_2 = 3;
+            const int PERCENT_3 = 2;
 
             var stats = new MatrixRowSummary
             {
                 SelfPercent = PERCENT_0,
                 NoOfStates = 4,
-                NoOfNonZeroPercents = 2,
-                NoOfZeroPercents = 2,
+                NoOfNonZeroPercents = 4,
+                NoOfZeroPercents = 0,
                 Clusters = new ValueCluster[] {
                     new ValueCluster
                     {
@@ -157,14 +162,20 @@ namespace MarkovBytes.UnitTests
                     {
                         Value = PERCENT_1,
                     },
+                    new ValueCluster
+                    {
+                        Value = PERCENT_2,
+                    },
+                    new ValueCluster
+                    {
+                        Value = PERCENT_3,
+                    },
                 },
             };
 
             const ushort MAX_PROBABILITY = 100;
-            var optimizer = new MatrixOptimizer
-            {
-
-            };
+            var slicer = new Mock<ISlicer>();
+            var optimizer = new MatrixOptimizer(slicer.Object);
             var result = optimizer.Evaluate(MAX_PROBABILITY, stats);
             Assert.AreEqual(SolutionType.Unoptimized, result.Approach);
         }
@@ -179,9 +190,9 @@ namespace MarkovBytes.UnitTests
             var stats = new MatrixRowSummary
             {
                 SelfPercent = PERCENT_0,
-                NoOfStates = 5,
+                NoOfStates = 3,
                 NoOfNonZeroPercents = 3,
-                NoOfZeroPercents = 2,
+                NoOfZeroPercents = 0,
                 Clusters = new ValueCluster[] {
                     new ValueCluster
                     {
@@ -199,10 +210,8 @@ namespace MarkovBytes.UnitTests
             };
 
             const ushort MAX_PROBABILITY = 100;
-            var optimizer = new MatrixOptimizer
-            {
-
-            };
+            var slicer = new Mock<ISlicer>();
+            var optimizer = new MatrixOptimizer(slicer.Object);
             var result = optimizer.Evaluate(MAX_PROBABILITY, stats);
             Assert.AreEqual(SolutionType.Unoptimized, result.Approach);
         }
@@ -214,7 +223,8 @@ namespace MarkovBytes.UnitTests
             const int COUNT = 4;
             const ushort SELF_PERCENT = 100;
             var row = new ushort[] { SELF_PERCENT, 200, 300, 400 };
-            var optimizer = new MatrixOptimizer();
+            var slicer = new Mock<ISlicer>();
+            var optimizer = new MatrixOptimizer(slicer.Object);
             var result = optimizer.Investigate1DArray(0, row);
 
             Assert.AreEqual(COUNT, result.NoOfStates);
@@ -234,7 +244,8 @@ namespace MarkovBytes.UnitTests
             const int EXPECTED_3 = 200;
             const int EXPECTED_4 = 50;
             var row = new ushort[] { EXPECTED_4, EXPECTED_3, EXPECTED_1, EXPECTED_2 };
-            var optimizer = new MatrixOptimizer();
+            var slicer = new Mock<ISlicer>();
+            var optimizer = new MatrixOptimizer(slicer.Object);
             var result = optimizer.Investigate1DArray(0, row);
 
             Assert.AreEqual(COUNT, result.NoOfStates);
@@ -284,7 +295,8 @@ namespace MarkovBytes.UnitTests
             const int COUNT = 3;
             const int EXPECTED_1 = 1000;
             var row = new ushort[] { EXPECTED_1, EXPECTED_1, EXPECTED_1 };
-            var optimizer = new MatrixOptimizer();
+            var slicer = new Mock<ISlicer>();
+            var optimizer = new MatrixOptimizer(slicer.Object);
             var result = optimizer.Investigate1DArray(0, row);
 
             Assert.AreEqual(COUNT, result.NoOfStates);
@@ -309,7 +321,8 @@ namespace MarkovBytes.UnitTests
             // TAKE N x N matrix
             const int COUNT = 0;
             var row = new ushort[] { };
-            var optimizer = new MatrixOptimizer();
+            var slicer = new Mock<ISlicer>();
+            var optimizer = new MatrixOptimizer(slicer.Object);
             var result = optimizer.Investigate1DArray(0, row);
 
             Assert.AreEqual(COUNT, result.NoOfStates);

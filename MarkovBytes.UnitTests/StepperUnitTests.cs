@@ -129,7 +129,7 @@ namespace MarkovBytes.UnitTests
             ushort value = 100;
 
             evaluator.Setup(ev => ev.Evaluate(It.IsAny<TestChunk>(), It.IsAny<ushort[]>(), value))
-                .Returns(0xff);
+                .Returns(0xfe);
 
             analyser.Setup(a => a.GetRightmostBit(It.IsAny<uint>()))
                 .Returns(0);
@@ -137,7 +137,7 @@ namespace MarkovBytes.UnitTests
             var actual = stepper.Iterate(rowTree, value);
             Assert.AreEqual(0, actual);
             evaluator.Verify(ev => ev.Evaluate(It.IsAny<TestChunk>(), BRANCH_KEYS, value), Times.Once());
-            analyser.Verify(a => a.GetRightmostBit(FIRST_MASK), Times.Once());
+            analyser.Verify(a => a.GetRightmostBit(It.IsAny<uint>()), Times.Once());
             analyser.Verify(a => a.GetRightmostBit(SECOND_MASK), Times.Once());
 
             evaluator.VerifyNoOtherCalls();

@@ -1,5 +1,6 @@
 ﻿using System;
 using Markov;
+using Moq;
 using NUnit.Framework;
 
 namespace MarkovBytes.UnitTests
@@ -19,10 +20,9 @@ namespace MarkovBytes.UnitTests
             };
 
             const ushort MAX_PROBABILITY = 100;
-            IMatrixOptimizer optimizer = new MatrixOptimizer
-            {
+            var slicer = new Mock<ISlicer>();
+            var optimizer = new MatrixOptimizer(slicer.Object);
 
-            };
 
             ushort[] rowDenominators = new[] {
                 MAX_PROBABILITY,
@@ -53,10 +53,8 @@ namespace MarkovBytes.UnitTests
                 { 0, 0, 0, 1 },
             };
 
-            IMatrixOptimizer optimizer = new MatrixOptimizer
-            {
-  
-            };
+            var slicer = new Mock<ISlicer>();
+            var optimizer = new MatrixOptimizer(slicer.Object);
 
             const ushort MaxProbability = 1;
 
