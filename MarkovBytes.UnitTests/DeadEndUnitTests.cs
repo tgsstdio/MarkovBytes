@@ -18,6 +18,7 @@ namespace MarkovBytes.UnitTests
             MatrixSolution matrixSolution = new MatrixSolution
             {
                 IsOptimized = true,
+                NoOfStates = 1,
                 Rows = new[]
                     {
                         new MatrixRowSolution
@@ -47,7 +48,7 @@ namespace MarkovBytes.UnitTests
 
             var solution = new MatrixSolution
             {
-
+                NoOfStates = 2,
                 IsOptimized = true,
                 Rows = new[]
                     {

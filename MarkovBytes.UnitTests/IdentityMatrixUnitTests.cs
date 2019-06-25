@@ -1,6 +1,7 @@
 ﻿using Markov;
 using Moq;
 using NUnit.Framework;
+using System;
 using System.Collections;
 
 namespace MarkovBytes.UnitTests
@@ -47,6 +48,42 @@ namespace MarkovBytes.UnitTests
 
         }
 
+        [Test]        
+        public void ThrowNullMatrix()
+        {
+            var rng = new Mock<IRandomNumberGenerator>();
+            var analyser = new Mock<IBitAnalyser>();
+            var evaluator = new Mock<INodeEvaluator>();
+            var stepper = new Stepper(evaluator.Object, analyser.Object);
+            var solver = new Solver(rng.Object, stepper);
+
+            var actual = Assert.Catch<ArgumentNullException>(() => solver.Resolve(null, 0, out int next));
+        }
+
+        [Test]
+        public void ThrowNegetiveStateIndex()
+        {
+            var rng = new Mock<IRandomNumberGenerator>();
+            var analyser = new Mock<IBitAnalyser>();
+            var evaluator = new Mock<INodeEvaluator>();
+            var stepper = new Stepper(evaluator.Object, analyser.Object);
+            var solver = new Solver(rng.Object, stepper);
+
+            var actual = Assert.Catch<ArgumentOutOfRangeException>(() => solver.Resolve(mSolution, -1, out int next));
+        }
+
+        [Test]
+        public void ThrowOutOfRangeIndex()
+        {
+            var rng = new Mock<IRandomNumberGenerator>();
+            var analyser = new Mock<IBitAnalyser>();
+            var evaluator = new Mock<INodeEvaluator>();
+            var stepper = new Stepper(evaluator.Object, analyser.Object);
+            var solver = new Solver(rng.Object, stepper);
+
+            var actual = Assert.Catch<ArgumentOutOfRangeException>(() => solver.Resolve(mSolution, 4, out int next));
+        }
+
 
         [TearDown]
         public void Dispose()
@@ -58,12 +95,12 @@ namespace MarkovBytes.UnitTests
         {
             get
             {
-                yield return new TestCaseData(0U).Returns(0U);
-                yield return new TestCaseData(1U).Returns(1U);
-                yield return new TestCaseData(2U).Returns(2U);
-                yield return new TestCaseData(3U).Returns(3U);
-                yield return new TestCaseData(-1).Returns(-1);
-                yield return new TestCaseData(4).Returns(-1);
+                yield return new TestCaseData(0).Returns(0);
+                yield return new TestCaseData(1).Returns(1);
+                yield return new TestCaseData(2).Returns(2);
+                yield return new TestCaseData(3).Returns(3);
+               // yield return new TestCaseData(-1).Returns(-1);
+               // yield return new TestCaseData(4).Returns(-1);
             }
         }
     }

@@ -1,4 +1,6 @@
-﻿namespace Markov
+﻿using System;
+
+namespace Markov
 {
     public class Solver
     {
@@ -13,6 +15,12 @@
 
         public bool Resolve(MatrixSolution solution, int pastState, out int next)
         {
+            if (solution == null)
+                throw new ArgumentNullException(nameof(solution));
+
+            if (pastState < 0 || pastState >= solution.NoOfStates)
+                throw new ArgumentOutOfRangeException(nameof(pastState), pastState, nameof(pastState) + " must be within [0,  " + solution.NoOfStates + ")");
+
             if (!solution.IsOptimized)
             {
                 next = -1;
