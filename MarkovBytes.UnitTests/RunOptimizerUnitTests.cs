@@ -21,7 +21,8 @@ namespace MarkovBytes.UnitTests
 
             const ushort MAX_PROBABILITY = 100;
             var slicer = new Mock<ISlicer>();
-            var optimizer = new MatrixOptimizer(slicer.Object);
+            var secondary = new Mock<IRowValleyOptimizer>();
+            var optimizer = new MatrixOptimizer(slicer.Object, secondary.Object);
 
 
             ushort[] rowDenominators = new[] {
@@ -54,7 +55,8 @@ namespace MarkovBytes.UnitTests
             };
 
             var slicer = new Mock<ISlicer>();
-            var optimizer = new MatrixOptimizer(slicer.Object);
+            var secondary = new Mock<IRowValleyOptimizer>();
+            var optimizer = new MatrixOptimizer(slicer.Object, secondary.Object);
 
             const ushort MaxProbability = 1;
 

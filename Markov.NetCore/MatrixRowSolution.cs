@@ -8,5 +8,6 @@
         public int Domain { get; set; }
         public ushort RowDenominator { get; set; }
         public int Tree { get; internal set; }
+        public int Cutoff { get; internal set; }
     }
 }

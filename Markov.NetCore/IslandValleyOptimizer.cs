@@ -2,12 +2,13 @@
 
 namespace Markov
 {
+
     /// <summary>
     /// island / valley Even-All (2nd optimization function) is based on trying to find a same % once 
     /// the outlier has been excluded from the range of non-zero probabilities.
     /// HOWEVER this case is only valid if the outlier outside the string of repeating of the percentage.
     /// </summary>
-    public class IslandValleyOptimizer
+    public class IslandValleyOptimizer : IRowValleyOptimizer
     {
         public static int GetNormalizedPeakIndex(int index, int length)
         {
@@ -18,6 +19,42 @@ namespace Markov
                 return ((index % length) + length) % length;
 
             return index;
+        }
+
+        public bool IsOptimizable(MatrixRowSummary summary, bool[] queries, out IslandResult result)
+        {
+            if (summary.Clusters.Length != 2)
+            {
+                result = new IslandResult
+                {
+                    Status = IslandOptimizationStatus.Invalid,
+                };
+                return false;
+            }
+
+            var peakGroupIndex = summary.Clusters[0].NoOfTimes == 1 ? 0 : 1;
+            var otherGroupIndex = (peakGroupIndex == 0) ? 1 : 0;
+
+            var otherGroup = summary.Clusters[otherGroupIndex];
+            if (summary.NoOfNonZeroPercents != (otherGroup.NoOfTimes + 1))
+            {
+                result = new IslandResult
+                {
+                    Status = IslandOptimizationStatus.Invalid,
+                };
+                return false;
+            }
+
+            //var queries = new bool[summary.NoOfStates];
+
+            //// SETUP UP CHECKS
+            //for (var i = 0; i < summary.NoOfStates; i += 1)
+            //{
+            //    queries[i] = (source[i] == otherGroup.Value);
+            //}
+
+            result = Examine(queries, summary.Clusters[peakGroupIndex].First);
+            return (result.Status == IslandOptimizationStatus.EvenAll);
         }
 
         public static IslandResult Examine(bool[] queries, int peakIndex)
@@ -121,26 +158,8 @@ namespace Markov
                 (firstValue != lastValue)
                    ? left
                    : right - 1; // VALLEY
-
-
-            // VALLEY
-            var zone1 = new IslandResult
-            {
-                Peak = normalizedPeak,
-                Status = IslandOptimizationStatus.EvenAll,
-                Left = (firstValue == lastValue) ? left : left + 1,
-                Right = (firstValue == lastValue) ? right - 1 : right,
-            };
-
-            // ISLAND
-            var zone2 = new IslandResult
-            {
-                Peak = normalizedPeak,
-                Status = IslandOptimizationStatus.EvenAll,
-                Left = right,
-                Right = left,
-            };           
-            
+                           
+          
             // IF firstValue is true => then valley scenario
                 // THEN INVALID if peak index is found outside (i.e. not in valley)
             // IF firstValue is false => then island scenario
@@ -205,6 +224,5 @@ namespace Markov
                 };
             }
         }
-
     }
 }

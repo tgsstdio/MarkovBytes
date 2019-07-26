@@ -13,7 +13,8 @@ namespace MarkovBytes.UnitTests
         public void CheckAllZeros_SingleRow()
         {
             var slicer = new Mock<ISlicer>();
-            var optimizer = new MatrixOptimizer(slicer.Object);
+            var secondary = new Mock<IRowValleyOptimizer>();
+            var optimizer = new MatrixOptimizer(slicer.Object, secondary.Object);
 
             // TAKE N x N matrix
             const int COUNT = 8;
@@ -37,7 +38,8 @@ namespace MarkovBytes.UnitTests
 
             const ushort ROW_DENOMINATOR = 0;
             var slicer = new Mock<ISlicer>();
-            var optimizer = new MatrixOptimizer(slicer.Object);
+            var secondary = new Mock<IRowValleyOptimizer>();
+            var optimizer = new MatrixOptimizer(slicer.Object, secondary.Object);
             var result = optimizer.Evaluate(ROW_DENOMINATOR, stats);
             Assert.AreEqual(SolutionType.NoOperation, result.Approach);
         }
@@ -48,7 +50,8 @@ namespace MarkovBytes.UnitTests
 
             const ushort MAX_VALUE = ushort.MaxValue;
             var slicer = new Mock<ISlicer>();
-            var optimizer = new MatrixOptimizer(slicer.Object);
+            var secondary = new Mock<IRowValleyOptimizer>();
+            var optimizer = new MatrixOptimizer(slicer.Object, secondary.Object);
 
             const int EXPECTED_RESULT = 2;
             const int OTHER_BRANCH = 1;
@@ -85,7 +88,8 @@ namespace MarkovBytes.UnitTests
 
             const ushort MAX_VALUE = ushort.MaxValue;
             var slicer = new Mock<ISlicer>();
-            var optimizer = new MatrixOptimizer(slicer.Object);
+            var secondary = new Mock<IRowValleyOptimizer>();
+            var optimizer = new MatrixOptimizer(slicer.Object, secondary.Object);
 
             const int OTHER = 1;
             var stats = new MatrixRowSummary
@@ -115,7 +119,8 @@ namespace MarkovBytes.UnitTests
             const ushort MAX_VALUE = ushort.MaxValue;
             var slicer = new Mock<ISlicer>();
 
-            var optimizer = new MatrixOptimizer(slicer.Object);
+            var secondary = new Mock<IRowValleyOptimizer>();
+            var optimizer = new MatrixOptimizer(slicer.Object, secondary.Object);
 
             const int EXPECTED_RESULT = 3;
             var stats = new MatrixRowSummary
@@ -175,7 +180,8 @@ namespace MarkovBytes.UnitTests
 
             const ushort MAX_PROBABILITY = 100;
             var slicer = new Mock<ISlicer>();
-            var optimizer = new MatrixOptimizer(slicer.Object);
+            var secondary = new Mock<IRowValleyOptimizer>();
+            var optimizer = new MatrixOptimizer(slicer.Object, secondary.Object);
             var result = optimizer.Evaluate(MAX_PROBABILITY, stats);
             Assert.AreEqual(SolutionType.Unoptimized, result.Approach);
         }
@@ -211,7 +217,8 @@ namespace MarkovBytes.UnitTests
 
             const ushort MAX_PROBABILITY = 100;
             var slicer = new Mock<ISlicer>();
-            var optimizer = new MatrixOptimizer(slicer.Object);
+            var secondary = new Mock<IRowValleyOptimizer>();
+            var optimizer = new MatrixOptimizer(slicer.Object, secondary.Object);
             var result = optimizer.Evaluate(MAX_PROBABILITY, stats);
             Assert.AreEqual(SolutionType.Unoptimized, result.Approach);
         }
@@ -224,7 +231,8 @@ namespace MarkovBytes.UnitTests
             const ushort SELF_PERCENT = 100;
             var row = new ushort[] { SELF_PERCENT, 200, 300, 400 };
             var slicer = new Mock<ISlicer>();
-            var optimizer = new MatrixOptimizer(slicer.Object);
+            var secondary = new Mock<IRowValleyOptimizer>();
+            var optimizer = new MatrixOptimizer(slicer.Object, secondary.Object);
             var result = optimizer.Investigate1DArray(0, row);
 
             Assert.AreEqual(COUNT, result.NoOfStates);
@@ -245,7 +253,8 @@ namespace MarkovBytes.UnitTests
             const int EXPECTED_4 = 50;
             var row = new ushort[] { EXPECTED_4, EXPECTED_3, EXPECTED_1, EXPECTED_2 };
             var slicer = new Mock<ISlicer>();
-            var optimizer = new MatrixOptimizer(slicer.Object);
+            var secondary = new Mock<IRowValleyOptimizer>();
+            var optimizer = new MatrixOptimizer(slicer.Object, secondary.Object);
             var result = optimizer.Investigate1DArray(0, row);
 
             Assert.AreEqual(COUNT, result.NoOfStates);
@@ -296,7 +305,8 @@ namespace MarkovBytes.UnitTests
             const int EXPECTED_1 = 1000;
             var row = new ushort[] { EXPECTED_1, EXPECTED_1, EXPECTED_1 };
             var slicer = new Mock<ISlicer>();
-            var optimizer = new MatrixOptimizer(slicer.Object);
+            var secondary = new Mock<IRowValleyOptimizer>();
+            var optimizer = new MatrixOptimizer(slicer.Object, secondary.Object);
             var result = optimizer.Investigate1DArray(0, row);
 
             Assert.AreEqual(COUNT, result.NoOfStates);
@@ -322,7 +332,8 @@ namespace MarkovBytes.UnitTests
             const int COUNT = 0;
             var row = new ushort[] { };
             var slicer = new Mock<ISlicer>();
-            var optimizer = new MatrixOptimizer(slicer.Object);
+            var secondary = new Mock<IRowValleyOptimizer>();
+            var optimizer = new MatrixOptimizer(slicer.Object, secondary.Object);
             var result = optimizer.Investigate1DArray(0, row);
 
             Assert.AreEqual(COUNT, result.NoOfStates);

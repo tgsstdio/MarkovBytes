@@ -20,9 +20,11 @@ namespace Markov
         }
 
         private ISlicer mSlicer;
-        public MatrixOptimizer(ISlicer slicer)
+        private IRowValleyOptimizer mSecondary;
+        public MatrixOptimizer(ISlicer slicer, IRowValleyOptimizer secondary)
         {
             mSlicer = slicer;
+            mSecondary = secondary;
         }
 
         public MatrixSolution Optimize(ushort[] rowDenominators, ushort[,] matrix)
@@ -39,29 +41,57 @@ namespace Markov
             {
                 var summary = Investigate2DArray(i, noOfStates, matrix);
 
-                var solutionType = GetSolutionType(rowDenominators[i], summary);
-                var item = new MatrixRowSolution
-                {
-                    Approach = solutionType,
-                    RowDenominator = rowDenominators[i],
-                    Branch = GetBranch(solutionType, summary),
-                    Left = GetLeft(solutionType, summary),
-                    Domain = GetDomain(solutionType, summary),
-                    Tree = GenerateTreeFromMatrix(solutionType, trees, i, matrix),
-                };
+                ushort rowDenominator = rowDenominators[i];
+                var solution = FindPrimarySolution(rowDenominator, summary);
 
-                solutions.Add(item);
+                if (solution != SolutionType.Unoptimized)
+                {
+                    InsertSolutionVia2DMatrix(solution, solutions, trees, matrix, i, summary, rowDenominator);
+                }
+                else
+                {
+                    if (MaybeSecondaryOptimization(summary, out int groupIndex))
+                    {
+                        var percentValue = summary.Clusters[groupIndex].Value;
+                        var checks = FindPeakIn2DMatrix(summary.NoOfStates, matrix, i, percentValue);
+                        var success = InsertSecondarySolution(solutions, summary, rowDenominator, checks, percentValue);
+                        if (!success)
+                        {
+                            InsertSolutionVia2DMatrix(solution, solutions, trees, matrix, i, summary, rowDenominator);
+                        }
+                    }
+                }
             }
             return CreateSolution(solutions, noOfStates, trees);
         }
 
+        private void InsertSolutionVia2DMatrix(SolutionType solutionType, List<MatrixRowSolution> dest, List<RowTree> trees, ushort[,] matrix, int i, MatrixRowSummary summary, ushort rowDenominator)
+        {
+            var treeIndex = GenerateTreeFromMatrix(solutionType, trees, i, matrix);
+            var item = SetupPrimaryLevel(solutionType, summary, rowDenominator, treeIndex);
+            dest.Add(item);
+        }
+
+        public static bool[] FindPeakIn2DMatrix(int noOfStates, ushort[,] rows, int rowIndex, ushort percentValue)
+        {
+            var queries = new bool[noOfStates];
+
+            // SETUP UP CHECKS
+            for (var i = 0; i < noOfStates; i += 1)
+            {
+                queries[i] = (rows[rowIndex, i] == percentValue);
+            }
+
+            return queries;
+        }
+
         private int GenerateTreeFromMatrix(SolutionType solutionType, List<RowTree> trees, int i, ushort[,] matrix)
         {
-            switch(solutionType) {
+            switch (solutionType) {
                 case SolutionType.Sparse:
                 case SolutionType.Unoptimized:
                     trees.Add(mSlicer.SliceMatrix(i, matrix));
-                    return trees.Count - 1;            
+                    return trees.Count - 1;
                 default:
                     return -1;
             }
@@ -78,7 +108,7 @@ namespace Markov
                 default:
                     return -1;
             }
-        }    
+        }
 
         private static void ValidateDimensions(int noOfRows, int noOfColumns)
         {
@@ -110,8 +140,88 @@ namespace Markov
             }
 
             return lookup;
+        }       
+        public static bool DetrimineGroupIndexInPair(MatrixRowSummary summary, out int groupIndex)
+        {
+            groupIndex = 0;
+            if (summary.Clusters[groupIndex].NoOfTimes != 1)
+            {
+                groupIndex = 1;
+                if (summary.Clusters[groupIndex].NoOfTimes != 1)
+                {
+                    return false;
+                }
+            }
+            return true;
         }
 
+        /// <summary>
+        ///  
+        /// </summary>
+        /// <param name="summary"></param>
+        /// <param name="groupIndex">Always 0 or 1 if true; -1 if false </param>
+        /// <returns></returns>
+        public static bool MaybeSecondaryOptimization(MatrixRowSummary summary, out int outIndex)
+        {
+            if (summary.Clusters.Length != 2)
+            {
+                outIndex = -1;
+                return false;
+            }
+
+            if (!DetrimineGroupIndexInPair(summary, out int groupIndex))
+            {
+                outIndex = -1;
+                return false;
+            }
+
+            var otherGroup = summary.Clusters[GetOtherGroupIndex(groupIndex)];
+            if (summary.NoOfNonZeroPercents != (otherGroup.NoOfTimes + 1))
+            {
+                outIndex = groupIndex;
+                return false;
+            }
+            else
+            {
+                outIndex = -1;
+                return true;
+            }
+        }
+
+        private static int GetOtherGroupIndex(int groupIndex)
+        {
+            return (groupIndex == 0) ? 1 : 0;
+        }
+
+        public static bool[] FindPeakIn1DArray(int noOfStates, ushort[] rows, ushort percentValue)
+        {
+            var queries = new bool[noOfStates];
+
+            // SETUP UP CHECKS
+            for (var i = 0; i < noOfStates; i += 1)
+            {
+                queries[i] = (rows[i] == percentValue);
+            }
+
+            return queries;
+        }
+
+        public MatrixRowSolution SetupPrimaryLevel(
+            SolutionType solutionType,
+            MatrixRowSummary summary,
+            ushort rowDenominator,
+            int treeIndex)
+        {
+            return new MatrixRowSolution
+            {
+                Approach = solutionType,
+                RowDenominator = rowDenominator,
+                Branch = GetBranch(solutionType, summary),
+                Left = GetLeft(solutionType, summary),
+                Domain = GetDomain(solutionType, summary),
+                Tree = treeIndex,
+            };
+        }
 
         public MatrixSolution Optimize(ushort[] rowDenominators, ushort[][] rows)
         {
@@ -128,21 +238,60 @@ namespace Markov
 
             for (var i = 0; i < noOfStates; i += 1)
             {
-                var summary = Investigate1DArray(i, rows[i]);
-                var solutionType = GetSolutionType(rowDenominators[i], summary);
-                var item = new MatrixRowSolution
-                {
-                    Approach = solutionType,
-                    RowDenominator = rowDenominators[i],
-                    Branch = GetBranch(solutionType, summary),
-                    Left = GetLeft(solutionType, summary),
-                    Domain = GetDomain(solutionType, summary),
-                    Tree = GenerateTreeFromArray(solutionType, trees, rows[i]),
-                };
+                var input = rows[i];
+                var summary = Investigate1DArray(i, input);
+                ushort rowDenominator = rowDenominators[i];
+                var solutionType = FindPrimarySolution(rowDenominator, summary);
 
-                solutions.Add(item);
+                if (solutionType != SolutionType.Unoptimized)
+                {
+                    InsertSolutionVia1DArray(solutionType, solutions, trees, input, summary, rowDenominator);
+                }
+                else
+                {
+                    if (MaybeSecondaryOptimization(summary, out int groupIndex))
+                    {
+                        var percentValue = summary.Clusters[groupIndex].Value;
+                        var checks = FindPeakIn1DArray(summary.NoOfStates, input, percentValue);
+                        var success = InsertSecondarySolution(solutions, summary, rowDenominator, checks, percentValue);
+                        if (!success)
+                        {
+                            InsertSolutionVia1DArray(solutionType, solutions, trees, input, summary, rowDenominator);
+                        }
+                    }
+                }
             }
             return CreateSolution(solutions, noOfStates, trees);
+        }
+
+        private bool InsertSecondarySolution(List<MatrixRowSolution> dest, MatrixRowSummary summary, ushort rowDenominator, bool[] checks, ushort percentValue)
+        {
+            if (mSecondary.IsOptimizable(summary, checks, out IslandResult result))
+            {
+                var secondary = new MatrixRowSolution
+                {
+                    Approach = SolutionType.SecondaryOptimization,
+                    Branch = result.Peak,
+                    Left = result.Left,
+                    Domain = result.Right,
+                    RowDenominator = rowDenominator,
+                    Cutoff = percentValue,
+                };
+
+                dest.Add(secondary);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        private void InsertSolutionVia1DArray(SolutionType solutionType, List<MatrixRowSolution> dest, List<RowTree> trees, ushort[] input, MatrixRowSummary summary, ushort rowDenominator)
+        {
+            var treeIndex = GenerateTreeFromArray(solutionType, trees, input);
+            var primary = SetupPrimaryLevel(solutionType, summary, rowDenominator, treeIndex);
+            dest.Add(primary);
         }
 
         private int GetDomain(SolutionType approach, MatrixRowSummary summary)
@@ -279,7 +428,7 @@ namespace Markov
             }
         }
 
-        public static SolutionType GetSolutionType(ushort rowDenominator, MatrixRowSummary summary)
+        public static SolutionType FindPrimarySolution(ushort rowDenominator, MatrixRowSummary summary)
         {
             if (summary.NoOfStates == summary.NoOfZeroPercents)
             {
@@ -315,7 +464,7 @@ namespace Markov
 
         public MatrixRowSolution Evaluate(ushort rowDenominator, MatrixRowSummary summary)
         {
-            var solutionType = GetSolutionType(rowDenominator, summary);
+            var solutionType = FindPrimarySolution(rowDenominator, summary);
 
             return new MatrixRowSolution
             {
