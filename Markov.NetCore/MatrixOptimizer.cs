@@ -19,8 +19,8 @@ namespace Markov
             }
         }
 
-        private ISlicer mSlicer;
-        private IRowValleyOptimizer mSecondary;
+        private readonly ISlicer mSlicer;
+        private readonly IRowValleyOptimizer mSecondary;
         public MatrixOptimizer(ISlicer slicer, IRowValleyOptimizer secondary)
         {
             mSlicer = slicer;
@@ -299,9 +299,11 @@ namespace Markov
             switch (approach)
             {
                 case SolutionType.EvenAll:
-                    return Solver.GetDomain(0, summary.NoOfNonZeroPercents - 1, summary.NoOfStates);
+                    {
+                         return Solver.WrapRange(0, summary.NoOfNonZeroPercents - 1, summary.NoOfStates);
+                    }
                 case SolutionType.EvenOut:
-                    return Solver.GetDomain(
+                    return Solver.WrapRange(
                         summary.Row + 1,
                         summary.Row - 1,
                         summary.NoOfStates);

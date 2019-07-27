@@ -39,13 +39,28 @@ namespace Markov
                     return true;
                 case SolutionType.EvenAll:
                 case SolutionType.EvenOut:
-                    int randValue = mRNG.Next(current.RowDenominator);
-                    next = GetEvenInRange(randValue,
-                        current.RowDenominator,
-                        current.Left,
-                        current.Domain,
-                        solution.NoOfStates);
-                    return true;
+                    {
+                        int randValue = mRNG.Next(current.RowDenominator);
+                        next = GetEvenInRange(randValue,
+                            current.RowDenominator,
+                            current.Left,
+                            current.Domain,
+                            solution.NoOfStates);
+                        return true;
+                    }
+                case SolutionType.SecondaryOptimization:
+                    {
+                        int randValue = mRNG.Next(current.RowDenominator);
+                        next = GetRowValley(randValue,
+                            current.Branch,
+                            current.Cutoff,
+                            current.RowDenominator,
+                            current.Left,
+                            current.Domain,
+                            solution.NoOfStates);                        
+
+                        return true;
+                    }
                 case SolutionType.Sparse:
                     var tree = solution.Trees[current.Tree];                    
                     var result = mStepper.Iterate(tree, (ushort) mRNG.Next(current.RowDenominator));
@@ -65,7 +80,28 @@ namespace Markov
             }
         }
 
-        public static int GetDomain(int left, int right, int arrayLength)
+        public static int GetRowValley(int numRand, int peak, int cutoff, int maxRand, int left, int domain, int arrayLength)
+        {
+            if (numRand < cutoff)
+            {
+                return peak;
+            }
+
+            // int n = numRand - minRand; int d = maxRand - minRand;
+            //int domain = GetDomain(left, right, arrayLength);
+            int d = WrapRange(left, domain, arrayLength);
+            int windowSize = d + 1;
+            int shift = ((numRand - cutoff) * windowSize) / (maxRand - cutoff);
+
+            // BOUNDED VALUES 100% => < 1.0
+            int offset = Clamp(shift, 0, arrayLength);
+            // ? windowSize - 1 // LAST VALUE
+            // : shift;
+
+            return (left + offset) % arrayLength;
+        }
+
+        public static int WrapRange(int left, int right, int arrayLength)
         {
             // move 
             int end = right;
@@ -83,7 +119,7 @@ namespace Markov
             // return GetIndex(normal, N, offset, count);
 
             int right = left + count - 1;
-            int domain = GetDomain(left, right, N);
+            int domain = WrapRange(left, right, N);
             return GetEvenInRange(next, count, left, domain, N);
         }
 
@@ -91,7 +127,7 @@ namespace Markov
         {
             int left = self + 1;
             int right = self - 1;
-            int domain = GetDomain(left, right, n);
+            int domain = WrapRange(left, right, n);
             return GetEvenInRange(next, n - 1, left, domain, n);
 
 
@@ -127,7 +163,7 @@ namespace Markov
             //return index;
 
             int right = N - 1 + offset;
-            int domain = GetDomain(offset, right, N);
+            int domain = WrapRange(offset, right, N);
             return GetEvenInRange(next, maxDomain, offset,
                 domain, N);
         }

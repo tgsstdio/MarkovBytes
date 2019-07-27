@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using Markov;
 using NUnit.Framework;
 
@@ -154,6 +155,50 @@ namespace MarkovBytes.UnitTests
             Assert.AreEqual(4, GetIndex(1, 5, 3, 5));
             Assert.AreEqual(4, GetIndex(5, 5, 0, 5));
             Assert.AreEqual(0, GetIndex(1, 5, 4, 5));
+        }
+
+        [Test]
+        [TestCaseSource(nameof(EvenAllValues))]
+        public int SlimRecheck_EvenAll(int next, int arrayLength, int left, int count)
+        {
+            int right = left + count - 1;
+            return Solver.GetEvenInRange(next, count, left, Solver.WrapRange(left, right, arrayLength), arrayLength);
+        }
+
+        public static IEnumerable EvenAllValues
+        {
+            get
+            {
+                // SlimWindow_0
+                yield return new TestCaseData(0, 10, 0, 4).Returns(0);
+
+                // SlimWindow_1
+                yield return new TestCaseData(0, 10, 1, 4).Returns(1);
+
+                // SlimWindow_2
+                yield return new TestCaseData(0, 10, 2, 4).Returns(2);
+
+                // SlimWindow_3
+                yield return new TestCaseData(0, 10, 3, 4).Returns(3);
+
+                // SlimWindow_4
+                yield return new TestCaseData(0, 10, 6, 4).Returns(6);
+
+                // WindowOF4_1
+                yield return new TestCaseData(1, 10, 6, 4).Returns(7);
+
+                // WindowOf4_0
+                yield return new TestCaseData(0, 10, 6, 4).Returns(6);
+
+                // WindowOf4_2
+                yield return new TestCaseData(2, 10, 6, 4).Returns(8);
+
+                // WindowOf4_3
+                yield return new TestCaseData(3, 10, 6, 4).Returns(9);
+
+                // WindowOf4_4
+                yield return new TestCaseData(4, 10, 6, 4).Returns(9);
+            }
         }
 
         [Test]
