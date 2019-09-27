@@ -1,7 +1,5 @@
 ﻿using NUnit.Framework;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace MarkovBytes.UnitTests
 {
@@ -13,8 +11,9 @@ namespace MarkovBytes.UnitTests
             var multi = new MatrixMultiplication();
             var ex = Assert.Throws<ArgumentOutOfRangeException>(
               delegate { multi.Extract(0, 0, new ushort[0, 0] { }); });
-            Assert.That(ex.Message, Is.EqualTo("row must less than length.\r\nParameter name: row\r\nActual value was 0."));
+            //Assert.That(ex.Message, Is.EqualTo("row must less than length.\r\nParameter name: row\r\nActual value was 0."));
             Assert.That(ex.ActualValue, Is.EqualTo(0U));
+            Assert.That(ex.ParamName, Is.EqualTo("row"));
             //Assert.That(() =>
             //{
             //    throw new FormatException("This is a format exception.");

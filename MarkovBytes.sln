@@ -12,7 +12,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SetBitwise16BitMask.Benchma
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SetBitwise32BitMask.Benchmarks", "NarrowWiden\SetBitwise32BitMask.Benchmarks\SetBitwise32BitMask.Benchmarks.csproj", "{11CBD0FB-A1A8-4EE1-86F9-65EA4F529CD0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Markov.NetCore", "Markov.NetCore\Markov.NetCore.csproj", "{14C391BD-7107-4C0D-9B88-779424366598}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Markov", "Markov.NetCore\Markov.csproj", "{14C391BD-7107-4C0D-9B88-779424366598}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
