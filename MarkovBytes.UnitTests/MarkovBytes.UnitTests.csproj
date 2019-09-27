@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Markov.NetCore\Markov.csproj" />
+    <ProjectReference Include="..\Markov\Markov.csproj" />
   </ItemGroup>
 
 </Project>

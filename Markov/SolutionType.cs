@@ -9,5 +9,6 @@
         Redirect,
         DeadEnd,
         Sparse,
+        SecondaryOptimization,
     }
 }
